@@ -1,35 +1,67 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
+
+type Message = {
+  role: 'user' | 'bot';
+  content_type: 'markdown' | 'card' | 'html' | 'text';
+  content: string | any;
+}
+
 
 export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<string[]>([])
+ //const [isOpen, setIsOpen] = useState(false)
+ const [isChatbotOpen, setIsChatbotOpen] = useState(false)
+ const [messages, setMessages] = useState<Message[]>([])
 
-  const handleSend = (message: string) => {
-    if (!message.trim()) return
-    setMessages([...messages, message])
-  }
+ const handleSend = async (message: string) => {
+  if (!message.trim()) return
+
+  setMessages((prev) => [
+    ...prev, 
+    { role: 'user', content_type: 'text', content: message }
+  ])
+  
+  // Call backend
+  const res = await fetch('http://localhost:8000/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+
+  const data = await res.json();
+
+  // Append the bot's response
+  setMessages((prev) => [...prev, data]);
+}
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {!isOpen ? (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition"
-        >
-          💬
-        </button>
+      {!isChatbotOpen ? (
+       <button
+       onClick={() => setIsChatbotOpen(true)}
+       className="bg-blue-600 p-2 rounded-full shadow-lg hover:scale-105 transition"
+     >
+       <Image
+         src="/chat-icon.png"
+         alt="Chat Icon"
+         width={40}
+         height={40}
+         className="rounded-full"
+       />
+     </button>
       ) : (
         <div className="w-80 h-96 bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
           <div className="bg-blue-600 text-white px-4 py-2 font-bold flex justify-between items-center">
-            <span>Ask StudentBot</span>
-            <button onClick={() => setIsOpen(false)}>✖</button>
+            <span>TUCBot</span>
+            <button onClick={() => setIsChatbotOpen(false)}>✖</button>
           </div>
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm text-gray-800">
             {messages.map((msg, idx) => (
               <div key={idx} className="bg-blue-100 p-2 rounded-md">
-                {msg}
+                {msg.content}
               </div>
             ))}
           </div>
