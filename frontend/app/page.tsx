@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Head from 'next/head'; 
-import ChatBot from '@/components/ChatBot'
+import ChatBot from '../components/ChatBot';
 
 export default function Home() {
   return (

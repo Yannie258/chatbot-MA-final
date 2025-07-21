@@ -1,13 +1,43 @@
-FROM node:20-alpine
+# Stage 1: Builder - Install dependencies and build
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# Copy package files first for better caching
+COPY package.json package-lock.json ./
 
+# Install all dependencies including devDependencies (needed for TypeScript)
+RUN npm install --include=dev
+
+# Copy all source files
 COPY . .
 
-RUN yarn build
+# Build the application
+RUN npm run build
+
+# Stage 2: Development - For hot-reloading
+FROM node:20-alpine AS development
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install all dependencies (including devDependencies for development)
+RUN npm install --include=dev
+
+# Copy built artifacts from builder
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./next.config.ts
+
+# Copy source files for development (enables hot-reloading)
+COPY . .
+
+# Environment variables
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV CHOKIDAR_USEPOLLING=true
 
 EXPOSE 3000
-CMD ["yarn", "start"]
+CMD ["npm", "run", "dev"]
