@@ -11,59 +11,103 @@ type Message = {
 
 
 export default function Chatbot() {
- //const [isOpen, setIsOpen] = useState(false)
- const [isChatbotOpen, setIsChatbotOpen] = useState(false)
- const [messages, setMessages] = useState<Message[]>([])
+  //const [isOpen, setIsOpen] = useState(false)
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([])
+  const chatbotUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
- const handleSend = async (message: string) => {
-  if (!message.trim()) return
+  const handleSend = async (message: string) => {
+    if (!message.trim()) return
 
-  setMessages((prev) => [
-    ...prev, 
-    { role: 'user', content_type: 'text', content: message }
-  ])
-  
-  // Call backend
-  const res = await fetch('http://localhost:8000/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
-  });
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content_type: 'text', content: message }
+    ])
 
-  const data = await res.json();
+    // Call backend
+    const res = await fetch(`${chatbotUrl}/chatbot`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    });
 
-  // Append the bot's response
-  setMessages((prev) => [...prev, data]);
-}
+    const data = await res.json();
 
+    // Append the bot's response
+    setMessages((prev) => [...prev, data]);
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {!isChatbotOpen ? (
-       <button
-       onClick={() => setIsChatbotOpen(true)}
-       className="bg-blue-600 p-2 rounded-full shadow-lg hover:scale-105 transition"
-     >
-       <Image
-         src="/chat-icon.png"
-         alt="Chat Icon"
-         width={40}
-         height={40}
-         className="rounded-full"
-       />
-     </button>
+        <button
+          className="bg-blue-600 p-2 rounded-full shadow-lg hover:scale-105 transition"
+          onClick={() => {
+            setIsChatbotOpen(true)
+            // Add bot greeting only if no messages exist
+            setMessages((prev) =>
+              prev.length === 0
+                ? [...prev, {
+                    role: 'bot',
+                    content_type: 'text',
+                    content: "Hello! How can I assist you today?"
+                  }]
+                : prev
+            )
+          }}
+          
+        >
+          <Image
+            src="/chat-icon.png"
+            alt="Chat Icon"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+        </button>
       ) : (
-        <div className="w-80 h-96 bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="w-96 h-150 bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
           <div className="bg-blue-600 text-white px-4 py-2 font-bold flex justify-between items-center">
             <span>TUCBot</span>
             <button onClick={() => setIsChatbotOpen(false)}>✖</button>
           </div>
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm text-gray-800">
             {messages.map((msg, idx) => (
-              <div key={idx} className="bg-blue-100 p-2 rounded-md">
-                {msg.content}
+              <div
+                key={idx}
+                className={`flex items-end ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                {msg.role === 'bot' && (
+                  <Image
+                    src="/bot-icon.png"
+                    alt="Bot"
+                    width={24}
+                    height={24}
+                    className="rounded-full mr-2"
+                  />
+                )}
+
+                <div
+                  className={`max-w-xs px-3 py-2 rounded-lg text-sm ${msg.role === 'user'
+                      ? 'bg-blue-500 text-white self-end'
+                      : 'bg-gray-100 text-gray-900 self-start'
+                    }`}
+                >
+                  {msg.content}
+                </div>
+
+                {msg.role === 'user' && (
+                  <Image
+                    src="/user-icon.png"
+                    alt="User"
+                    width={24}
+                    height={24}
+                    className="rounded-full ml-2"
+                  />
+                )}
               </div>
             ))}
+
           </div>
           <form
             className="border-t p-2 flex"
