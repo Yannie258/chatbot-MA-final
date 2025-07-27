@@ -9,7 +9,6 @@ type Message = {
   content: string | any;
 }
 
-
 export default function Chatbot() {
   //const [isOpen, setIsOpen] = useState(false)
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
@@ -71,7 +70,7 @@ export default function Chatbot() {
             <span>TUCBot</span>
             <button onClick={() => setIsChatbotOpen(false)}>✖</button>
           </div>
-          <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm text-gray-800">
+          <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm text-gray-800 text-left">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
