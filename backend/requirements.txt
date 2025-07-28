@@ -4,3 +4,8 @@ openai>=1.0.0
 pydantic
 python-dotenv
 redis
+langchain
+langchain-community
+faiss-cpu
+PyMuPDF
+tiktoken
