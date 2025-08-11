@@ -14,6 +14,9 @@ export default function Chatbot() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const chatbotUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [outputFormat, setOutputFormat] = useState('plain');
+
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return
@@ -27,7 +30,7 @@ export default function Chatbot() {
     const res = await fetch(`${chatbotUrl}/chatbot`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, strategy: outputFormat }),
     });
 
     const data = await res.json();
@@ -47,14 +50,14 @@ export default function Chatbot() {
             setMessages((prev) =>
               prev.length === 0
                 ? [...prev, {
-                    role: 'bot',
-                    content_type: 'text',
-                    content: "Hello! How can I assist you today?"
-                  }]
+                  role: 'bot',
+                  content_type: 'text',
+                  content: "Hello! How can I assist you today?"
+                }]
                 : prev
             )
           }}
-          
+
         >
           <Image
             src="/chat-icon.png"
@@ -88,8 +91,8 @@ export default function Chatbot() {
 
                 <div
                   className={`max-w-xs px-3 py-2 rounded-lg text-sm ${msg.role === 'user'
-                      ? 'bg-blue-500 text-white self-end'
-                      : 'bg-gray-100 text-gray-900 self-start'
+                    ? 'bg-blue-500 text-white self-end'
+                    : 'bg-gray-100 text-gray-900 self-start'
                     }`}
                 >
                   {msg.content}
@@ -124,12 +127,40 @@ export default function Chatbot() {
               placeholder="Type a message..."
             />
             <button
+              type="button"
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className="px-2 text-blue-600 hover:text-blue-800"
+              title="Settings"
+            >
+              ⚙️
+            </button>
+            <button
               type="submit"
               className="bg-blue-600 text-white px-3 rounded-md text-sm hover:bg-blue-700"
             >
               Send
             </button>
           </form>
+          {isSettingsOpen && (
+            <div className="absolute right-0 bottom-[48px] bg-white p-4 border rounded shadow-md w-84 z-50 text-sm">
+              <h3 className="font-bold mb-3 text-gray-800">Output Format</h3>
+              <div className="flex flex-wrap gap-2">
+                {['plain', 'markdown', 'json', 'few-shot'].map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => setOutputFormat(option)}
+                    className={`px-3 py-1 rounded-full border transition ${outputFormat === option
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       )}
     </div>

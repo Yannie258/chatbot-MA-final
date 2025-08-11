@@ -1,5 +1,12 @@
 # ma-yen-nguyen
-
+## Run program in docker
+- open docker desktop
+- from root of project run:
+    ``` 
+    docker compose build
+    
+    docker compose up
+    ```
 
 
 ## Getting started
