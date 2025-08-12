@@ -1,27 +1,37 @@
-import React from 'react'
+import React from 'react';
 
-type Props = {
+type CardProps = {
   title: string;
-  content: string;
-  actions: string[];
-}
+  description?: string;
+  imageUrl?: string;
+  actionLabel?: string;
+  actionUrl?: string;
+};
 
-export default function CardComponent({ title, content, actions }: Props) {
+const CardComponent: React.FC<CardProps> = ({ title, description, imageUrl, actionLabel, actionUrl }) => {
   return (
-    <div className="border p-3 rounded-md shadow bg-white">
-      <h3 className="font-bold text-blue-600">{title}</h3>
-      <p className="text-sm mt-1">{content}</p>
-      <div className="mt-2 flex space-x-2">
-        {actions.map((action, idx) => (
-          <button
-            key={idx}
-            className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
-            onClick={() => alert(`Clicked: ${action}`)}
-          >
-            {action}
-          </button>
-        ))}
-      </div>
+    <div className="bg-white rounded-lg shadow-md p-4 mb-3">
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-40 object-cover rounded-md mb-2"
+        />
+      )}
+      <h3 className="text-lg font-semibold">{title}</h3>
+      {description && <p className="text-gray-700 text-sm mt-1">{description}</p>}
+      {actionLabel && actionUrl && (
+        <a
+          href={actionUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+        >
+          {actionLabel}
+        </a>
+      )}
     </div>
-  )
-}
+  );
+};
+
+export default CardComponent;

@@ -15,4 +15,4 @@ app.add_middleware(
 
 @app.post("/chatbot", response_model=ChatResponse)
 def chat(input: ChatInput):
-    return generate_response(input.message)
+    return generate_response(input.message, input.strategy)

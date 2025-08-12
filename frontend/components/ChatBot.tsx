@@ -2,10 +2,17 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import SettingStrategyPopup from './SettingStrategyPopup';
+import ReactMarkdown from 'react-markdown';
+import CardComponent from './CardComponent';
+import CarouselComponent from './CarouselComponent';
+import ButtonList from './ButtonList';
+import LinkList from './LinkList';
+import { ContentType } from '@/enums/ContentType';
 
 type Message = {
   role: 'user' | 'bot';
-  content_type: 'markdown' | 'card' | 'html' | 'text';
+  content_type: ContentType;
   content: string | any;
 }
 
@@ -15,7 +22,7 @@ export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([])
   const chatbotUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [outputFormat, setOutputFormat] = useState('plain');
+  const [selectedOutputStrategyFormat, setSelectedOutputStrategyFormat] = useState('plain');
 
 
   const handleSend = async (message: string) => {
@@ -23,14 +30,14 @@ export default function Chatbot() {
 
     setMessages((prev) => [
       ...prev,
-      { role: 'user', content_type: 'text', content: message }
+      { role: 'user', content_type: ContentType.TEXT, content: message }
     ])
 
     // Call backend
     const res = await fetch(`${chatbotUrl}/chatbot`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, strategy: outputFormat }),
+      body: JSON.stringify({ message, strategy: selectedOutputStrategyFormat }),
     });
 
     const data = await res.json();
@@ -51,7 +58,7 @@ export default function Chatbot() {
               prev.length === 0
                 ? [...prev, {
                   role: 'bot',
-                  content_type: 'text',
+                  content_type: ContentType.TEXT,
                   content: "Hello! How can I assist you today?"
                 }]
                 : prev
@@ -95,7 +102,27 @@ export default function Chatbot() {
                     : 'bg-gray-100 text-gray-900 self-start'
                     }`}
                 >
-                  {msg.content}
+                  {/* start message */}
+                  {msg.content_type === ContentType.TEXT && <p>{msg.content}</p>}
+
+                  {msg.content_type === ContentType.MARKDOWN && (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  )}
+                  {msg.content_type === ContentType.JSON && (
+                    <pre>{JSON.stringify(msg.content, null, 2)}</pre>
+                  )}
+                  {msg.content_type === ContentType.CARD && (
+                    <CardComponent {...msg.content} />
+                  )}
+                  {msg.content_type === ContentType.CAROUSEL && (
+                    <CarouselComponent cards={msg.content} />
+                  )}
+                  {msg.content_type === ContentType.BUTTON && (
+                    <ButtonList buttons={msg.content.buttons} />
+                  )}
+                  {msg.content_type === ContentType.LINK && (
+                    <LinkList links={msg.content.links} />
+                  )}
                 </div>
 
                 {msg.role === 'user' && (
@@ -107,6 +134,7 @@ export default function Chatbot() {
                     className="rounded-full ml-2"
                   />
                 )}
+
               </div>
             ))}
 
@@ -142,23 +170,11 @@ export default function Chatbot() {
             </button>
           </form>
           {isSettingsOpen && (
-            <div className="absolute right-0 bottom-[48px] bg-white p-4 border rounded shadow-md w-84 z-50 text-sm">
-              <h3 className="font-bold mb-3 text-gray-800">Output Format</h3>
-              <div className="flex flex-wrap gap-2">
-                {['plain', 'markdown', 'json', 'few-shot'].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setOutputFormat(option)}
-                    className={`px-3 py-1 rounded-full border transition ${outputFormat === option
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <SettingStrategyPopup
+              selected={selectedOutputStrategyFormat}
+              onChange={(value: string) => setSelectedOutputStrategyFormat(value)} // Update selected strategy
+              onClose={() => setIsSettingsOpen(false)} // Close the popup
+            />
           )}
 
         </div>
