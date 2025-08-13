@@ -1,5 +1,6 @@
 'use client';
 
+import { ContentType } from '@/enums/ContentType';
 import React, { useState } from 'react';
 
 type SettingStrategyPopupProps = {
@@ -9,14 +10,14 @@ type SettingStrategyPopupProps = {
 };
 
 const strategies = [
-  { value: 'plain', label: 'Simple Text' },
-  { value: 'markdown', label: 'Formatted Text' },
-  { value: 'json', label: 'Structured Data' },
-  { value: 'fewshot', label: 'Example-based Response' },
-  { value: 'card', label: 'Information Card' },
-  { value: 'carousel', label: 'Scrollable Cards' },
-  { value: 'button', label: 'Interactive Buttons' },
-  { value: 'link', label: 'List of Links' },
+  { value: ContentType.PLAIN, label: 'Simple Text' },
+  { value: ContentType.MARKDOWN, label: 'Formatted Text' },
+  { value: ContentType.JSON, label: 'Structured Data' },
+  { value: ContentType.FEWSHOT, label: 'Example-based Response' },
+  { value: ContentType.CARD, label: 'Information Card' },
+  { value: ContentType.CAROUSEL, label: 'Scrollable Cards' },
+  { value: ContentType.BUTTON, label: 'Interactive Buttons' },
+  { value: ContentType.LINK, label: 'List of Links' },
 ];
 
 const SettingStrategyPopup: React.FC<SettingStrategyPopupProps> = ({

@@ -7,5 +7,6 @@ export enum ContentType {
   BUTTON = 'button',
   LINK = 'link',
   PLAIN = 'plain',
-  
+  FEWSHOT = 'fewshot',
+
 }

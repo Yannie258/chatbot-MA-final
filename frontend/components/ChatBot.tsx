@@ -123,6 +123,16 @@ export default function Chatbot() {
                   {msg.content_type === ContentType.LINK && (
                     <LinkList links={msg.content.links} />
                   )}
+                  {msg.content_type === ContentType.FEWSHOT && (
+                    <div className="bg-gray-100 p-2 rounded-md">
+                      <h4 className="font-bold mb-2">Few-shot Examples:</h4>
+                      <ul className="list-disc list-inside">
+                        {msg.content.examples.map((example: string, idx: number) => (
+                          <li key={idx}>{example}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 {msg.role === 'user' && (
