@@ -1,37 +1,32 @@
-import React from 'react';
-
-type CardProps = {
+type CardContent = {
   title: string;
-  description?: string;
-  imageUrl?: string;
-  actionLabel?: string;
-  actionUrl?: string;
+  description: string;
+  image_url?: string | null;
+  action_url?: string;
+  action_label?: string;
 };
 
-const CardComponent: React.FC<CardProps> = ({ title, description, imageUrl, actionLabel, actionUrl }) => {
+export default function CardComponent({ title, description, image_url, action_url,
+  action_label = "Learn more" }: CardContent) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-3">
-      {imageUrl && (
+    <div className="border p-4 rounded shadow bg-white max-w-xs">
+      {image_url && (
         <img
-          src={imageUrl}
+          src={image_url}
           alt={title}
-          className="w-full h-40 object-cover rounded-md mb-2"
+          className="w-full h-32 object-cover rounded mb-2"
         />
       )}
-      <h3 className="text-lg font-semibold">{title}</h3>
-      {description && <p className="text-gray-700 text-sm mt-1">{description}</p>}
-      {actionLabel && actionUrl && (
-        <a
-          href={actionUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+      <h3 className="text-lg font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-gray-700">{description}</p>
+      {action_url && (
+        <button
+          onClick={() => window.open(action_url, "_blank")}
+          className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-500 text-sm"
         >
-          {actionLabel}
-        </a>
+          {action_label}
+        </button>
       )}
     </div>
   );
-};
-
-export default CardComponent;
+}

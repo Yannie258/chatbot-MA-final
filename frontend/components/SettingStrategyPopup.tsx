@@ -12,7 +12,6 @@ type SettingStrategyPopupProps = {
 const strategies = [
   { value: ContentType.PLAIN, label: 'Simple Text' },
   { value: ContentType.MARKDOWN, label: 'Formatted Text' },
-  { value: ContentType.JSON, label: 'Structured Data' },
   { value: ContentType.FEWSHOT, label: 'Example-based Response' },
   { value: ContentType.CARD, label: 'Information Card' },
   { value: ContentType.CAROUSEL, label: 'Scrollable Cards' },

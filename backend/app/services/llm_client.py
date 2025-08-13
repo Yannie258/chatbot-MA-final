@@ -16,7 +16,13 @@ def generate_response(user_message: str, strategy="plain") -> ChatResponse:
         content_type = "json"
 
     elif strategy == "card":
-        prompt = f"""Reply in JSON with this format:\n{{"title": "...", "description": "...", "image_url": "..."}}"""
+        prompt = f"""You are a helpful assistant. Reply with a JSON object like this:\n\n{{
+            "title": "Card title",
+            "description": "Description of the card",
+            "image_url": "https://www.tu-chemnitz.de/tu/aktuelles/2025/1753698184-13054-0.jpg",
+            "action_url": "https://www.tu-chemnitz.de/studiportal/",
+            "action_label": "More Info"
+            }}\n\n Only include 'image_url' if relevant. Answer the question using this format, without markdown or code formatting.\n\nQuestion: {user_message}"""
         content_type = "card"
 
     elif strategy == "carousel":
@@ -31,9 +37,12 @@ def generate_response(user_message: str, strategy="plain") -> ChatResponse:
         prompt = f"""Return a JSON object with clickable links like this:\n{{"text": "...", "links": [{{"label": "...", "url": "..."}}]}}"""
         content_type = "link"
 
-    else:
+    elif strategy == "plain":
         prompt = f"""You are a helpful assistant. Answer this question: {user_message}"""
         content_type = "text"
+
+    else:
+        raise ValueError(f"Unknown strategy: {strategy}")
 
     # RAG context (if needed)
     embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))

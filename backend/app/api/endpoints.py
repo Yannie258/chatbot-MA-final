@@ -9,7 +9,7 @@ rag_service = RAGService()
 @router.post("/chatbot", response_model=ChatResponse)
 async def chat_endpoint(
     user_message: str,
-    model: Optional[str] = "gpt-3.5-turbo",
+    model: Optional[str] = "gpt-4o-mini",
     temperature: Optional[float] = 0.2
 ):
     """
@@ -17,7 +17,7 @@ async def chat_endpoint(
     
     Parameters:
     - user_message: The input message from user
-    - model: Which LLM model to use (default: gpt-3.5-turbo)
+    - model: Which LLM model to use (default: gpt-4o-mini)
     - temperature: Creativity parameter (0-1)
     
     Returns:

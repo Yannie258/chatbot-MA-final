@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import SettingStrategyPopup from './SettingStrategyPopup';
 import ReactMarkdown from 'react-markdown';
@@ -24,6 +24,18 @@ export default function Chatbot() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedOutputStrategyFormat, setSelectedOutputStrategyFormat] = useState('plain');
 
+  // Load saved strategy from localStorage on component mount
+  useEffect(() => {
+    const saved = localStorage.getItem("outputStrategy")
+    if (saved) {
+      setSelectedOutputStrategyFormat(saved)
+    }
+  }, [])
+
+  // Save strategy to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("outputStrategy", selectedOutputStrategyFormat)
+  }, [selectedOutputStrategyFormat])
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return
@@ -108,11 +120,8 @@ export default function Chatbot() {
                   {msg.content_type === ContentType.MARKDOWN && (
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   )}
-                  {msg.content_type === ContentType.JSON && (
-                    <pre>{JSON.stringify(msg.content, null, 2)}</pre>
-                  )}
-                  {msg.content_type === ContentType.CARD && (
-                    <CardComponent {...msg.content} />
+                  {msg.content_type === ContentType.CARD && msg.content && (                  
+                    <CardComponent {...JSON.parse(msg.content)} />                   
                   )}
                   {msg.content_type === ContentType.CAROUSEL && (
                     <CarouselComponent cards={msg.content} />
