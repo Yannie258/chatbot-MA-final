@@ -1,50 +1,45 @@
 import React from 'react';
+import Image from 'next/image'
 
 type CardItem = {
-  title: string;
-  description?: string;
-  imageUrl?: string;
-  actionLabel?: string;
-  actionUrl?: string;
+    title: string;
+    description: string;
+    image_url?: string;
+    url?: string;
 };
 
 type CarouselProps = {
-  cards: CardItem[];
+    cards: CardItem[];
 };
 
 const CarouselComponent: React.FC<CarouselProps> = ({ cards }) => {
-  return (
-    <div className="overflow-x-auto flex space-x-4 p-2">
-      {cards.map((card, index) => (
-        <div
-          key={index}
-          className="min-w-[250px] bg-white rounded-lg shadow-md p-4 flex-shrink-0"
-        >
-          {card.imageUrl && (
-            <img
-              src={card.imageUrl}
-              alt={card.title}
-              className="w-full h-32 object-cover rounded-md mb-2"
-            />
-          )}
-          <h3 className="text-lg font-semibold">{card.title}</h3>
-          {card.description && (
-            <p className="text-gray-700 text-sm mt-1">{card.description}</p>
-          )}
-          {card.actionLabel && card.actionUrl && (
-            <a
-              href={card.actionUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-3 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-            >
-              {card.actionLabel}
-            </a>
-          )}
+    return (
+        <div className="overflow-x-auto flex gap-4 p-2">
+            {cards.map((card, index) => (
+                <a
+                    key={index}
+                    href={card.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-w-[250px] max-w-[250px] bg-white border rounded-lg shadow hover:shadow-lg transition duration-200"
+                >
+                    {card.image_url && (
+                        <img
+                            src={card.image_url}
+                            alt={card.title}
+                            width={250}
+                            height={140}
+                            className="rounded-t-lg object-cover"
+                        />
+                    )}
+                    <div className="p-3">
+                        <h3 className="text-md font-bold">{card.title}</h3>
+                        <p className="text-sm text-gray-700 mt-1">{card.description}</p>
+                    </div>
+                </a>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 };
 
 export default CarouselComponent;

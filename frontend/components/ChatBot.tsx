@@ -124,8 +124,17 @@ export default function Chatbot() {
                     <CardComponent {...JSON.parse(msg.content)} />
                   )}
                   {msg.content_type === ContentType.CAROUSEL && (
-                    <CarouselComponent cards={msg.content} />
+                    (() => {
+                      try {
+                        const cleaned = msg.content.replace(/```json|```/g, '').trim();
+                        const parsed = JSON.parse(cleaned);
+                        return <CarouselComponent cards={parsed} />;
+                      } catch (error) {
+                        return <p className="text-red-600">⚠️ Error parsing carousel content</p>;
+                      }
+                    })()
                   )}
+
                   {msg.content_type === ContentType.BUTTON && msg.content && (
                     <ButtonList {...(typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content)}
                       onSelect={(value) => handleSend(value)}

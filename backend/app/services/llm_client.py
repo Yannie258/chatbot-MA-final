@@ -26,7 +26,22 @@ def generate_response(user_message: str, strategy="plain") -> ChatResponse:
         content_type = "card"
 
     elif strategy == "carousel":
-        prompt = f"""Reply in JSON as a list of cards like this:\n[{{"title": "...", "description": "...", "image_url": "..."}}]"""
+        prompt = f"""You are a helpful assistant. Based on the following context, reply in JSON as a list of cards. Each card should include a 'title', a 'description', and — if possible — an 'image_url' that is relevant to the topic. If the PDF context provides no image, you can use a placeholder or leave the 'image_url' empty.
+
+        Format:
+        [
+        {{
+            "title": "...",
+            "description": "...",
+            "image_url": "https://www.tu-chemnitz/.../image.jpg"  # or findout in pdf RAG or leave "https://www.tu-chemnitz.de/studierendenservice/images/Kopfbild_04.png" if no image is available
+            "url": "https://example.com"
+        }},
+        ...
+        ]
+
+        Question: {user_message}
+        """
+
         content_type = "carousel"
 
     elif strategy == "button":
