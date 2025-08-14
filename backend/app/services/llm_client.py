@@ -30,7 +30,12 @@ def generate_response(user_message: str, strategy="plain") -> ChatResponse:
         content_type = "carousel"
 
     elif strategy == "button":
-        prompt = f"""Return a JSON object with 'text' and 'buttons' fields like this:\n{{"text": "...", "buttons": ["Option 1", "Option 2"]}}"""
+        prompt = f"""Return a JSON object like this:
+        {{
+        "text": "your main response here",
+        "buttons": ["Option 1", "Option 2", "Option 3"]
+        }}
+        User Question: {user_message}"""
         content_type = "button"
 
     elif strategy == "link":

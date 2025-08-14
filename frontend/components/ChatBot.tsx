@@ -126,8 +126,10 @@ export default function Chatbot() {
                   {msg.content_type === ContentType.CAROUSEL && (
                     <CarouselComponent cards={msg.content} />
                   )}
-                  {msg.content_type === ContentType.BUTTON && (
-                    <ButtonList buttons={msg.content.buttons} />
+                  {msg.content_type === ContentType.BUTTON && msg.content && (
+                    <ButtonList {...(typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content)} 
+                    onSelect={(value) => handleSend(value)}
+                    />
                   )}
                   {msg.content_type === ContentType.LINK && (
                     <LinkList links={msg.content.links} />
