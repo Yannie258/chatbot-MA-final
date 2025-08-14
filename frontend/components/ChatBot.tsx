@@ -120,20 +120,37 @@ export default function Chatbot() {
                   {msg.content_type === ContentType.MARKDOWN && (
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   )}
-                  {msg.content_type === ContentType.CARD && msg.content && (                  
-                    <CardComponent {...JSON.parse(msg.content)} />                   
+                  {msg.content_type === ContentType.CARD && msg.content && (
+                    <CardComponent {...JSON.parse(msg.content)} />
                   )}
                   {msg.content_type === ContentType.CAROUSEL && (
                     <CarouselComponent cards={msg.content} />
                   )}
                   {msg.content_type === ContentType.BUTTON && msg.content && (
-                    <ButtonList {...(typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content)} 
-                    onSelect={(value) => handleSend(value)}
+                    <ButtonList {...(typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content)}
+                      onSelect={(value) => handleSend(value)}
                     />
                   )}
-                  {msg.content_type === ContentType.LINK && (
-                    <LinkList links={msg.content.links} />
-                  )}
+                  {msg.content_type === ContentType.LINK && msg.content && (() => {
+                    let raw = msg.content;
+                    let parsed = null;
+
+                    try {
+                      if (typeof raw === 'string') {
+                        // Remove markdown code block wrapper
+                        const cleaned = raw.replace(/^```json\n/, '').replace(/\n```$/, '');
+                        parsed = JSON.parse(cleaned);
+                      } else {
+                        parsed = raw;
+                      }
+                    } catch (err) {
+                      console.error("Failed to parse link content:", err);
+                      return <p className="text-red-600">Error rendering links</p>;
+                    }
+
+                    return <LinkList text={parsed.text} links={parsed.links} />;
+                  })()}
+
                   {msg.content_type === ContentType.FEWSHOT && (
                     <div className="bg-gray-100 p-2 rounded-md">
                       <h4 className="font-bold mb-2">Few-shot Examples:</h4>
