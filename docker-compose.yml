@@ -26,7 +26,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/app
+      - ./backend/app:/app
       - /app/.venv  # For Python virtualenv
     ports:
       - "8000:8000"
