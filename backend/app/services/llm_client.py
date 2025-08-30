@@ -54,7 +54,7 @@ def generate_response(user_message: str, strategy="plain") -> ChatResponse:
         content_type = "button"
 
     elif strategy == "link":
-        prompt = f"""Return a JSON object with clickable links like this:\n{{"text": "...", "links": [{{"label": "...", "url": "..."}}]}}"""
+        prompt = f"""Return a JSON object with clickable links like this and translate in english :\n{{"text": "...", "links": [{{"label": "...", "url": "..."}}]}}"""
         content_type = "link"
 
     elif strategy == "plain":

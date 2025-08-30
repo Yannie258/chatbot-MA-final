@@ -35,7 +35,7 @@ const SettingStrategyPopup: React.FC<SettingStrategyPopupProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-96 p-6">
-        <h3 className="text-lg font-semibold mb-4">Select a Strategy</h3>
+        <h3 className="text-lg font-semibold mb-4">Select an Output Structure Format</h3>
         <ul className="space-y-2">
           {strategies.map((strategy) => (
             <li

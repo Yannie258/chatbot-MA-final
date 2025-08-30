@@ -16,7 +16,11 @@ type Message = {
   content: string | any;
 }
 
-export default function Chatbot() {
+type Props = {
+  apiUrl: string;
+}
+
+export default function Chatbot({ apiUrl }: Props) {
   //const [isOpen, setIsOpen] = useState(false)
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
@@ -46,12 +50,12 @@ export default function Chatbot() {
     ])
 
     // Call backend
-    const res = await fetch(`${chatbotUrl}/chatbot`, {
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, strategy: selectedOutputStrategyFormat }),
+      body: JSON.stringify({ message }),
     });
-
+    
     const data = await res.json();
 
     // Append the bot's response
