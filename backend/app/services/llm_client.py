@@ -58,7 +58,21 @@ def generate_response(user_message: str, strategy="plain") -> ChatResponse:
         content_type = "link"
 
     elif strategy == "plain":
-        prompt = f"""You are a helpful assistant. Answer this question: {user_message}"""
+        prompt = f"""
+            You are a helpful student onboarding assistant at TU Chemnitz.
+            Answer the following question in **plain natural text** only.
+
+            ✨ Style rules:
+            - Be **clear and concise**, avoid long academic paragraphs.
+            - Use a friendly intro sentence.
+            - For each important item, start with a **short bold headline** (intent).
+            - Place details in a **new line** under that headline, not in the same line.
+            - Use bullet points (•) for lists.
+            - Add blank lines between items for readability.
+            - Keep the tone warm and encouraging.
+            - End with a follow-up suggestion to keep the conversation going.
+    
+    Question: {user_message}"""
         content_type = "text"
 
     else:

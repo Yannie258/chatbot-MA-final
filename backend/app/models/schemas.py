@@ -1,11 +1,10 @@
 from pydantic import BaseModel
-from typing import Union, Dict
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 from .strategy import OutputFormat  # import  Enum
 
 class ChatInput(BaseModel):
     message: str
-    strategy: str
+    strategy: Optional[str] = None  # user can choose strategy or not
     #strategy: OutputFormat = OutputFormat.PLAIN  # default strategy is plain text
 
 class ChatResponse(BaseModel):

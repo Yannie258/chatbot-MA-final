@@ -50,12 +50,12 @@ export default function Chatbot({ apiUrl }: Props) {
     ])
 
     // Call backend
-    const res = await fetch(apiUrl, {
+    const res = await fetch(`${chatbotUrl}/chatbot`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, strategy: selectedOutputStrategyFormat }),
     });
-    
+
     const data = await res.json();
 
     // Append the bot's response
@@ -119,7 +119,12 @@ export default function Chatbot({ apiUrl }: Props) {
                     }`}
                 >
                   {/* start message */}
-                  {msg.content_type === ContentType.TEXT && <p>{msg.content}</p>}
+                  {msg.content_type === ContentType.TEXT && (
+                    <div className="prose prose-sm max-w-none leading-relaxed space-y-3">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                  )}
+
 
                   {msg.content_type === ContentType.MARKDOWN && (
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
