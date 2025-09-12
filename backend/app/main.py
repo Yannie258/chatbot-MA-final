@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from models.schemas import ChatInput, ChatResponse
-from services.llm_client import generate_response
+from chatbot.llm_client import generate_response, generate_response_plain, generate_response_structured
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,7 +21,7 @@ def chat(input: ChatInput):
 # -----------------------
 # Baseline endpoint (Group A)
 # -----------------------
-@app.post("/chat/plain", response_model=ChatResponse)
+@app.post("/chatbot/plain", response_model=ChatResponse)
 def chat_plain(input: ChatInput):
     """Return plain text baseline (no structured output)."""
     return generate_response(input.message, strategy="plain")
@@ -30,7 +30,11 @@ def chat_plain(input: ChatInput):
 # ---------------------------
 # Structured endpoint (Group B)
 # ---------------------------
-@app.post("/chat/structured", response_model=ChatResponse)
+@app.post("/chatbot/structured", response_model=ChatResponse)
 def chat_structured(input: ChatInput):
-    """Return structured output (JSON/cards/buttons)."""
-    return generate_response(input.message, input.strategy or "icl")
+    """Return structured output"""
+    return generate_response(input.message, strategy="function")
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}

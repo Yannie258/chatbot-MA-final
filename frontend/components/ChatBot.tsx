@@ -66,7 +66,7 @@ export default function Chatbot({ apiUrl }: Props) {
     <div className="fixed bottom-6 right-6 z-50">
       {!isChatbotOpen ? (
         <button
-          className="bg-blue-600 p-2 rounded-full shadow-lg hover:scale-105 transition"
+          className="bg-green-600 p-2 rounded-full shadow-lg hover:scale-105 transition"
           onClick={() => {
             setIsChatbotOpen(true)
             // Add bot greeting only if no messages exist
@@ -83,16 +83,15 @@ export default function Chatbot({ apiUrl }: Props) {
 
         >
           <Image
-            src="/chat-icon.png"
+            src="/chat-icon.svg"
             alt="Chat Icon"
-            width={40}
-            height={40}
-            className="rounded-full"
+            width={45}
+            height={45}
           />
         </button>
       ) : (
         <div className="w-96 h-150 bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
-          <div className="bg-blue-600 text-white px-4 py-2 font-bold flex justify-between items-center">
+          <div className="bg-green-600 text-white px-4 py-2 font-bold flex justify-between items-center">
             <span>TUCBot</span>
             <button onClick={() => setIsChatbotOpen(false)}>✖</button>
           </div>
@@ -114,7 +113,7 @@ export default function Chatbot({ apiUrl }: Props) {
 
                 <div
                   className={`max-w-xs px-3 py-2 rounded-lg text-sm ${msg.role === 'user'
-                    ? 'bg-blue-500 text-white self-end'
+                    ? 'bg-green-500 text-white self-end'
                     : 'bg-gray-100 text-gray-900 self-start'
                     }`}
                 >
@@ -213,14 +212,14 @@ export default function Chatbot({ apiUrl }: Props) {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="px-2 text-blue-600 hover:text-blue-800"
+              className="px-2 text-green-600 hover:text-green-800"
               title="Settings"
             >
               ⚙️
             </button>
             <button
               type="submit"
-              className="bg-blue-600 text-white px-3 rounded-md text-sm hover:bg-blue-700"
+              className="bg-green-600 text-white px-3 rounded-md text-sm hover:bg-green-700"
             >
               Send
             </button>

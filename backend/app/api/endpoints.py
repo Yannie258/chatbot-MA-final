@@ -35,6 +35,46 @@ async def chat_endpoint(
             detail=f"Error processing chat request: {str(e)}"
         )
 
+@router.post("/chatbot/plain", response_model=ChatResponse)
+async def chat_plain(
+    user_message: str,
+    model: Optional[str] = "gpt-4o-mini",
+    temperature: Optional[float] = 0.2
+):
+    """
+    Baseline chatbot (Version A) returns plain text output
+    """
+    try:
+        return rag_service.generate_response(
+            user_message=user_message,
+            strategy="plain",  
+            model=model,
+            temperature=temperature
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.post("/chatbot/structured", response_model=ChatResponse)
+async def chat_structured(
+    user_message: str,
+    model: Optional[str] = "gpt-4o-mini",
+    temperature: Optional[float] = 0.2
+):
+    """
+    Enhanced chatbot (Version B) – returns structured JSON output
+    """
+    try:
+        return rag_service.generate_response(
+            user_message=user_message,
+            strategy="function",
+            model=model,
+            temperature=temperature
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
 @router.get("/health")
 async def health_check():
     return {"status": "healthy"}

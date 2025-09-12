@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from typing import Union, Dict, Optional
-from .strategy import OutputFormat  # import  Enum
 
 class ChatInput(BaseModel):
     message: str
