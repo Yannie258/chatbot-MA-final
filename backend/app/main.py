@@ -33,4 +33,4 @@ def chat_plain(input: ChatInput):
 @app.post("/chat/structured", response_model=ChatResponse)
 def chat_structured(input: ChatInput):
     """Return structured output (JSON/cards/buttons)."""
-    return generate_response(input.message, strategy="structured")
+    return generate_response(input.message, input.strategy or "icl")

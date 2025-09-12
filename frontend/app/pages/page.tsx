@@ -1,9 +1,8 @@
 "use client";
 import Chatbot from "@/components/ChatBot";
 import Head from 'next/head'; 
-export default function PlainPage() {
+export default function MainPage() {
 
-  
   return (
     <>
       <Head>
@@ -16,7 +15,8 @@ export default function PlainPage() {
         </p>
         <p className="text-sm text-gray-400">Scroll or chat with us anytime!</p>
 
-        <Chatbot apiUrl="http://localhost:8000/chat/plain" />;
+        {/* <Chatbot apiUrl="http://localhost:8000/chat/plain" />; */}
+        <Chatbot apiUrl="http://localhost:8000/chat/structured" />
       </main>
     </>
   )
