@@ -1,28 +1,22 @@
-import React from 'react';
-
 type LinkItem = {
   label: string;
   url: string;
 };
 
 type LinkListProps = {
-  text: string;
+  type: "link";
+  label?: string;
   links: LinkItem[];
 };
 
-const LinkList: React.FC<LinkListProps> = ({ text, links }) => {
+export default function LinkList({ label, links }: LinkListProps) {
   return (
-    <div className="mt-2 p-3 bg-white rounded-md shadow-sm border text-sm space-y-2">
-      <p className="text-gray-800">{text}</p>
-      <ul className="list-disc list-inside space-y-1">
+    <div className="p-2">
+      {label && <h4 className="font-semibold mb-2">{label}</h4>}
+      <ul className="list-disc list-inside text-sm text-blue-600">
         {links.map((link, idx) => (
           <li key={idx}>
-            <a
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
+            <a href={link.url} target="_blank" rel="noopener noreferrer">
               {link.label}
             </a>
           </li>
@@ -30,6 +24,4 @@ const LinkList: React.FC<LinkListProps> = ({ text, links }) => {
       </ul>
     </div>
   );
-};
-
-export default LinkList;
+}

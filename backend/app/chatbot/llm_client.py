@@ -1,29 +1,17 @@
+import logging
 import os, json
 from openai import OpenAI
-from models.schemas import ChatResponse
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import OpenAIEmbeddings
+from models.chat_response import ChatResponse
+from models.schemas import get_all_schemas
+from services.rag import retrieve_context
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# ---------------------------
-# Helpers
-# ---------------------------
-def _load_vector_db():
-    embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
-    return FAISS.load_local("vector_index", embeddings, allow_dangerous_deserialization=True)
-
-def _retrieve_context(query: str, k: int = 3) -> str:
-    db = _load_vector_db()
-    docs = db.similarity_search(query, k=k)
-    return "\n".join([doc.page_content for doc in docs])
 
 # ---------------------------
 # Dispatcher
 # ---------------------------
 def generate_response(user_message: str, strategy="plain") -> ChatResponse:
-    context = _retrieve_context(user_message)
-
+    context = retrieve_context(user_message)
     if strategy == "plain":
         return generate_response_plain(user_message, context)
     elif strategy == "function":
@@ -40,9 +28,7 @@ def generate_response_plain(user_message: str, context: str) -> ChatResponse:
     Use the following context to answer:
     {context}
 
-    Answer the question in **plain natural text** only.
-
-    Style rules:
+    Answer in **plain natural text** only.
     - Be clear and concise
     - Use bold headlines
     - Bullet points for lists
@@ -63,37 +49,22 @@ def generate_response_plain(user_message: str, context: str) -> ChatResponse:
         content=response.choices[0].message.content
     )
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 # ---------------------------
 # Version B – structured
 # ---------------------------
 def generate_response_structured(user_message: str, context: str) -> ChatResponse:
-    tools = [{
-        "type": "function",
-        "function": {
-            "name": "create_card",
-            "description": "Generate a structured onboarding info card",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "type": {"type": "string", "enum": ["card"]},
-                    "title": {"type": "string"},
-                    "description": {"type": "string"},
-                    "action_url": {"type": "string"},
-                    "action_label": {"type": "string"}
-                },
-                "required": ["type", "title", "description", "action_label"]
-            }
-        }
-    }]
+    tools = get_all_schemas()  # load schemas
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a TU Chemnitz onboarding assistant."},
+            {"role": "system", "content": "You are a TU Chemnitz onboarding assistant. Use the best structured format (card, button, carousel, link)."},
             {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {user_message}"}
         ],
         tools=tools,
-        tool_choice={"type": "function", "function": {"name": "create_card"}},
+        tool_choice="auto",  # let model pick
         temperature=0.2
     )
 
@@ -109,6 +80,6 @@ def generate_response_structured(user_message: str, context: str) -> ChatRespons
 
     return ChatResponse(
         role="bot",
-        content_type="json",
+        content_type=parsed_output.get("type", "json"),
         content=parsed_output
     )

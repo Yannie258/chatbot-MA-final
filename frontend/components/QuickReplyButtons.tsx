@@ -1,22 +1,25 @@
-import React from 'react'
-
-type Props = {
+type QuickReplyButtons = {
+  type: "button";
+  title?: string;
   options: string[];
-  onSelect: (option: string) => void;
-}
+  onSelect: (value: string) => void;
+};
 
-export default function QuickReplyButtons({ options, onSelect }: Props) {
+export default function QuickReplyButtons({ title, options, onSelect }: QuickReplyButtons) {
   return (
-    <div className="flex space-x-2 mt-2">
-      {options.map((option, idx) => (
-        <button
-          key={idx}
-          className="bg-gray-200 hover:bg-gray-300 text-sm px-3 py-1 rounded"
-          onClick={() => onSelect(option)}
-        >
-          {option}
-        </button>
-      ))}
+    <div className="p-2">
+      {title && <h4 className="font-semibold mb-2">{title}</h4>}
+      <div className="flex gap-2 flex-wrap">
+        {options.map((opt, idx) => (
+          <button
+            key={idx}
+            onClick={() => onSelect(opt)}
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
     </div>
-  )
+  );
 }

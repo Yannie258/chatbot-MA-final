@@ -16,7 +16,7 @@ def build_index(pdf_path="data/Fibel_2024.pdf", index_path="vector_index"):
     db = FAISS.from_documents(chunks, embeddings)
 
     db.save_local(index_path)
-    print(f"✅ Index saved at {index_path}")
+    print(f"Index saved at {index_path}")
 
 if __name__ == "__main__":
     build_index()

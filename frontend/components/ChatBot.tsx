@@ -1,19 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import SettingStrategyPopup from './SettingStrategyPopup';
 import ReactMarkdown from 'react-markdown';
-import CardComponent from './CardComponent';
-import CarouselComponent from './CarouselComponent';
-import ButtonList from './ButtonList';
-import LinkList from './LinkList';
-import { ContentType } from '@/enums/ContentType';
+import TypingIndicator from './TypingIndicator';
+import StructuredResponse from './StructuredResponse';
+//import { ContentType } from '@/enums/ContentType';
 
 type Message = {
   role: 'user' | 'bot';
-  content_type: ContentType;
+  content_type: 'text' | 'card' | 'button' | 'carousel' | 'link';
   content: string | any;
+  typing?: boolean;
 }
 
 type Props = {
@@ -26,41 +24,64 @@ export default function Chatbot({ apiUrl }: Props) {
   const [messages, setMessages] = useState<Message[]>([])
   const chatbotUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [selectedOutputStrategyFormat, setSelectedOutputStrategyFormat] = useState('plain');
+  //const [selectedOutputStrategyFormat, setSelectedOutputStrategyFormat] = useState('plain');
 
   // Load saved strategy from localStorage on component mount
   useEffect(() => {
     const saved = localStorage.getItem("outputStrategy")
-    if (saved) {
-      setSelectedOutputStrategyFormat(saved)
-    }
   }, [])
 
-  // Save strategy to localStorage when it changes
+  // reference for the scrollable div
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
+
+  // scroll effect when messages change
   useEffect(() => {
-    localStorage.setItem("outputStrategy", selectedOutputStrategyFormat)
-  }, [selectedOutputStrategyFormat])
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages])
+
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return
 
     setMessages((prev) => [
       ...prev,
-      { role: 'user', content_type: ContentType.TEXT, content: message }
+      { role: 'user', content_type: "text", content: message }
     ])
 
-    // Call backend
-    const res = await fetch(`${chatbotUrl}/chatbot`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, strategy: selectedOutputStrategyFormat }),
-    });
+    // Add temporary typing indicator
+    setMessages((prev) => [
+      ...prev,
+      { role: "bot", content_type: "text", content: "", typing: true }
+    ]);
 
-    const data = await res.json();
+    try {
+      const res = await fetch(`${chatbotUrl}/chatbot`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, strategy: "function" }),
+      });
 
-    // Append the bot's response
-    setMessages((prev) => [...prev, data]);
-  }
+      // Append the bot's response simply
+      //setMessages((prev) => [...prev, data]);
+
+      const data = await res.json();
+
+      // Remove typing indicator and add real response after get reply from backend
+      setMessages((prev) => [
+        ...prev.filter((m) => !m.typing),
+        data,
+      ]);
+    } catch (error) {
+      console.error("Error fetching response:", error);
+      // Replace typing with error
+      setMessages((prev) => [
+        ...prev.filter((m) => !m.typing),
+        { role: "bot", content_type: "text", content: "Error: could not connect." }
+      ]);
+    }
+  };
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -74,7 +95,7 @@ export default function Chatbot({ apiUrl }: Props) {
               prev.length === 0
                 ? [...prev, {
                   role: 'bot',
-                  content_type: ContentType.TEXT,
+                  content_type: "text",
                   content: "Hello! How can I assist you today?"
                 }]
                 : prev
@@ -117,67 +138,19 @@ export default function Chatbot({ apiUrl }: Props) {
                     : 'bg-gray-100 text-gray-900 self-start'
                     }`}
                 >
-                  {/* start message */}
-                  {msg.content_type === ContentType.TEXT && (
+                  {msg.typing ? (
+                    <TypingIndicator />
+                  ) : msg.content_type === "text" ? (
                     <div className="prose prose-sm max-w-none leading-relaxed space-y-3">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
-                  )}
-
-
-                  {msg.content_type === ContentType.MARKDOWN && (
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  )}
-                  {msg.content_type === ContentType.CARD && msg.content && (
-                    <CardComponent {...JSON.parse(msg.content)} />
-                  )}
-                  {msg.content_type === ContentType.CAROUSEL && (
-                    (() => {
-                      try {
-                        const cleaned = msg.content.replace(/```json|```/g, '').trim();
-                        const parsed = JSON.parse(cleaned);
-                        return <CarouselComponent cards={parsed} />;
-                      } catch (error) {
-                        return <p className="text-red-600">⚠️ Error parsing carousel content</p>;
-                      }
-                    })()
-                  )}
-
-                  {msg.content_type === ContentType.BUTTON && msg.content && (
-                    <ButtonList {...(typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content)}
-                      onSelect={(value) => handleSend(value)}
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <StructuredResponse
+                      response={msg}
+                      onUserAction={(choice) => handleSend(choice)}
                     />
                   )}
-                  {msg.content_type === ContentType.LINK && msg.content && (() => {
-                    let raw = msg.content;
-                    let parsed = null;
 
-                    try {
-                      if (typeof raw === 'string') {
-                        // Remove markdown code block wrapper
-                        const cleaned = raw.replace(/^```json\n/, '').replace(/\n```$/, '');
-                        parsed = JSON.parse(cleaned);
-                      } else {
-                        parsed = raw;
-                      }
-                    } catch (err) {
-                      console.error("Failed to parse link content:", err);
-                      return <p className="text-red-600">Error rendering links</p>;
-                    }
-
-                    return <LinkList text={parsed.text} links={parsed.links} />;
-                  })()}
-
-                  {msg.content_type === ContentType.FEWSHOT && (
-                    <div className="bg-gray-100 p-2 rounded-md">
-                      <h4 className="font-bold mb-2">Few-shot Examples:</h4>
-                      <ul className="list-disc list-inside">
-                        {msg.content.examples.map((example: string, idx: number) => (
-                          <li key={idx}>{example}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </div>
 
                 {msg.role === 'user' && (
@@ -192,7 +165,7 @@ export default function Chatbot({ apiUrl }: Props) {
 
               </div>
             ))}
-
+            <div ref={messagesEndRef} />
           </div>
           <form
             className="border-t p-2 flex"
@@ -225,11 +198,19 @@ export default function Chatbot({ apiUrl }: Props) {
             </button>
           </form>
           {isSettingsOpen && (
-            <SettingStrategyPopup
-              selected={selectedOutputStrategyFormat}
-              onChange={(value: string) => setSelectedOutputStrategyFormat(value)} // Update selected strategy
-              onClose={() => setIsSettingsOpen(false)} // Close the popup
-            />
+            <div className="absolute bottom-16 right-0 w-64 bg-white border rounded-md shadow-lg p-4 text-sm">
+              <h3 className="font-bold mb-2">Settings</h3>
+              <div className="mb-2">
+                <label className="block mb-1 font-semibold">Will be developed, please come back later on! Thank you! </label>
+
+              </div>
+              <button
+                className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                onClick={() => setIsSettingsOpen(false)}
+              >
+                Close
+              </button>
+            </div>
           )}
 
         </div>

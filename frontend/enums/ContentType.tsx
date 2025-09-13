@@ -1,11 +1,7 @@
 export enum ContentType {
-  TEXT = 'text',
-  MARKDOWN = 'markdown',
+  TEXT = 'plain',
   CARD = 'card',
   CAROUSEL = 'carousel',
   BUTTON = 'button',
   LINK = 'link',
-  PLAIN = 'plain',
-  FEWSHOT = 'fewshot',
-
 }

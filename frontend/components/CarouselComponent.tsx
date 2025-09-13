@@ -1,45 +1,38 @@
-import React from 'react';
-import Image from 'next/image'
-
-type CardItem = {
+type CarouselItem = {
     title: string;
     description: string;
-    image_url?: string;
-    url?: string;
-};
-
-type CarouselProps = {
-    cards: CardItem[];
-};
-
-const CarouselComponent: React.FC<CarouselProps> = ({ cards }) => {
+    action_url?: string;
+    action_label?: string;
+  };
+  
+  type CarouselProps = {
+    type: "carousel";
+    items: CarouselItem[];
+  };
+  
+  export default function CarouselComponent({ items }: CarouselProps) {
     return (
-        <div className="overflow-x-auto flex gap-4 p-2">
-            {cards.map((card, index) => (
-                <a
-                    key={index}
-                    href={card.url || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="min-w-[250px] max-w-[250px] bg-white border rounded-lg shadow hover:shadow-lg transition duration-200"
-                >
-                    {card.image_url && (
-                        <img
-                            src={card.image_url}
-                            alt={card.title}
-                            width={250}
-                            height={140}
-                            className="rounded-t-lg object-cover"
-                        />
-                    )}
-                    <div className="p-3">
-                        <h3 className="text-md font-bold">{card.title}</h3>
-                        <p className="text-sm text-gray-700 mt-1">{card.description}</p>
-                    </div>
-                </a>
-            ))}
-        </div>
+      <div className="flex overflow-x-auto space-x-4 p-2">
+        {items.map((item, idx) => (
+          <div
+            key={idx}
+            className="min-w-[200px] bg-white border rounded-lg p-3 shadow-sm"
+          >
+            <h4 className="font-bold text-md mb-1">{item.title}</h4>
+            <p className="text-gray-600 text-sm mb-2">{item.description}</p>
+            {item.action_url && (
+              <a
+                href={item.action_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline text-sm"
+              >
+                {item.action_label || "Learn more"}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
     );
-};
-
-export default CarouselComponent;
+  }
+  
