@@ -13,7 +13,7 @@ def get_card_schema():
                     "items": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "List of preparation steps or bullet points"
+                        "description": "Each item must be a clear, detailed step with enough explanation so that an international student could follow it without guessing. Avoid one-word or vague answers."
                     },
                     "action_url": {
                         "type": "string",

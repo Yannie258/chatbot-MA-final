@@ -6,17 +6,25 @@ type CardProps = {
   type: ContentType.CARD;
   title: string;
   description: string;
+  items?: string[];
   action_url?: string;
   action_label?: string;
 };
 
-export default function CardComponent({ title, description, action_url, action_label }: CardProps) {
+export default function CardComponent({ title, description, items, action_url, action_label }: CardProps) {
   const link = normalizeUrl(action_url);
-  
+
   return (
     <div className="bg-white border rounded-lg p-4 shadow-sm max-w-sm">
       <h3 className="font-bold text-lg mb-2">{title}</h3>
       <p className="text-gray-700 mb-4">{description}</p>
+      {items && items.length > 0 && (
+        <ol className="list-decimal list-inside text-gray-700 mb-4">
+          {items.map((step, idx) => (
+            <li key={idx}>{step}</li>
+          ))}
+        </ol>
+      )}
       {action_url && (
         <a
           href={link}
