@@ -5,14 +5,66 @@ import Image from 'next/image'
 import ReactMarkdown from 'react-markdown';
 import TypingIndicator from './TypingIndicator';
 import StructuredResponse from './StructuredResponse';
-//import { ContentType } from '@/enums/ContentType';
+import { ContentType } from '@/enums/ContentType';
 
-type Message = {
-  role: 'user' | 'bot';
-  content_type: 'text' | 'card' | 'button' | 'carousel' | 'link';
-  content: string | any;
+type TextMessage = {
+  role: "user" | "bot";
+  content_type: ContentType.TEXT;
+  content: string;
   typing?: boolean;
-}
+};
+
+type CardMessage = {
+  role: "bot";
+  content_type: ContentType.CARD;
+  content: {
+    type: ContentType.CARD;
+    title: string;
+    description: string;
+    action_url: string;
+    action_label?: string;
+  };
+  typing?: boolean;
+};
+
+type ButtonMessage = {
+  role: "bot";
+  content_type: ContentType.BUTTON;
+  content: {
+    type: ContentType.BUTTON;
+    title?: string;
+    options: string[];
+  };
+  typing?: boolean;
+};
+
+type CarouselMessage = {
+  role: "bot";
+  content_type: ContentType.CAROUSEL;
+  content: {
+    type: ContentType.CAROUSEL;
+    items: {
+      title: string;
+      description: string;
+      action_url?: string;
+      action_label?: string;
+    }[];
+  };
+  typing?: boolean;
+};
+
+type LinkMessage = {
+  role: "bot";
+  content_type: ContentType.LINK;
+  content: {
+    type: ContentType.LINK;
+    label?: string;
+    links: { label: string; url: string }[];
+  };
+  typing?: boolean;
+};
+
+type Message = TextMessage | CardMessage | ButtonMessage | CarouselMessage | LinkMessage;
 
 type Props = {
   apiUrl: string;
@@ -47,13 +99,13 @@ export default function Chatbot({ apiUrl }: Props) {
 
     setMessages((prev) => [
       ...prev,
-      { role: 'user', content_type: "text", content: message }
+      { role: 'user', content_type: ContentType.TEXT, content: message }
     ])
 
     // Add temporary typing indicator
     setMessages((prev) => [
       ...prev,
-      { role: "bot", content_type: "text", content: "", typing: true }
+      { role: "bot", content_type: ContentType.TEXT, content: "", typing: true }
     ]);
 
     try {
@@ -78,7 +130,7 @@ export default function Chatbot({ apiUrl }: Props) {
       // Replace typing with error
       setMessages((prev) => [
         ...prev.filter((m) => !m.typing),
-        { role: "bot", content_type: "text", content: "Error: could not connect." }
+        { role: "bot", content_type: ContentType.TEXT, content: "Error: could not connect." }
       ]);
     }
   };
@@ -95,7 +147,7 @@ export default function Chatbot({ apiUrl }: Props) {
               prev.length === 0
                 ? [...prev, {
                   role: 'bot',
-                  content_type: "text",
+                  content_type: ContentType.TEXT,
                   content: "Hello! How can I assist you today?"
                 }]
                 : prev
@@ -140,7 +192,7 @@ export default function Chatbot({ apiUrl }: Props) {
                 >
                   {msg.typing ? (
                     <TypingIndicator />
-                  ) : msg.content_type === "text" ? (
+                  ) : msg.content_type === ContentType.TEXT ? (
                     <div className="prose prose-sm max-w-none leading-relaxed space-y-3">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>

@@ -1,5 +1,7 @@
+import { ContentType } from "@/enums/ContentType";
+
 type QuickReplyButtons = {
-  type: "button";
+  type: ContentType.BUTTON;
   title?: string;
   options: string[];
   onSelect: (value: string) => void;

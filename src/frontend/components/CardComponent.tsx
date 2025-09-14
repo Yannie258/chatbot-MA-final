@@ -1,5 +1,9 @@
+import { ContentType } from "@/enums/ContentType";
+import { normalizeUrl } from "@/utils/utils";
+
+
 type CardProps = {
-  type: "card";
+  type: ContentType.CARD;
   title: string;
   description: string;
   action_url?: string;
@@ -7,6 +11,8 @@ type CardProps = {
 };
 
 export default function CardComponent({ title, description, action_url, action_label }: CardProps) {
+  const link = normalizeUrl(action_url);
+  
   return (
     <div className="bg-white border rounded-lg p-4 shadow-sm max-w-sm">
       <h3 className="font-bold text-lg mb-2">{title}</h3>

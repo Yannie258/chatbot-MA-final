@@ -1,10 +1,13 @@
+import { ContentType } from "@/enums/ContentType";
+import { normalizeUrl } from "@/utils/utils";
+
 type LinkItem = {
   label: string;
   url: string;
 };
 
 type LinkListProps = {
-  type: "link";
+  type: ContentType.LINK;
   label?: string;
   links: LinkItem[];
 };
@@ -16,7 +19,7 @@ export default function LinkList({ label, links }: LinkListProps) {
       <ul className="list-disc list-inside text-sm text-blue-600">
         {links.map((link, idx) => (
           <li key={idx}>
-            <a href={link.url} target="_blank" rel="noopener noreferrer">
+            <a href={normalizeUrl(link.url)} target="_blank" rel="noopener noreferrer">
               {link.label}
             </a>
           </li>
