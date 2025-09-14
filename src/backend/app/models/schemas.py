@@ -10,9 +10,20 @@ def get_card_schema():
                     "type": {"type": "string", "enum": ["card"]},
                     "title": {"type": "string"},
                     "description": {"type": "string"},
-                    "action_url": {"type": "string"},
-                    "action_label": {"type": "string"}
-                },
+                    "items": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "List of preparation steps or bullet points"
+                    },
+                    "action_url": {
+                        "type": "string",
+                        "description": "Optional link to relevant resource"
+                    },
+                    "action_label": {
+                        "type": "string",
+                        "description": "Optional button text for action_url"
+                    }
+                    },
                 "required": ["type", "title", "description", "action_label"]
             }
         }

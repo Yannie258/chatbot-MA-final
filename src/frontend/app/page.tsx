@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from '@/components/Footer';
 import MainSessions from '@/components/MainSessions';
 
+
 export default function Home() {
   return (
     <>

@@ -21,6 +21,7 @@ type CardMessage = {
     type: ContentType.CARD;
     title: string;
     description: string;
+    items?: string[];
     action_url: string;
     action_label?: string;
   };
@@ -64,7 +65,19 @@ type LinkMessage = {
   typing?: boolean;
 };
 
-type Message = TextMessage | CardMessage | ButtonMessage | CarouselMessage | LinkMessage;
+// List message (pure checklist, different from card)
+type ListMessage = {
+  role: "bot";
+  content_type: "list";
+  content: {
+    type: "list";
+    title: string;
+    items: string[];
+  };
+  typing?: boolean;
+};
+
+type Message = TextMessage | CardMessage | ButtonMessage | CarouselMessage | LinkMessage | ListMessage;
 
 type Props = {
   apiUrl: string;
@@ -97,6 +110,31 @@ export default function Chatbot({ apiUrl }: Props) {
   const handleSend = async (message: string) => {
     if (!message.trim()) return
 
+    const history = messages
+      .filter((m) => !m.typing)
+      .map((m) => {
+        if (m.role === "bot" && typeof m.content !== "string") {
+          // Flatten structured response into readable text
+          if (m.content.type === ContentType.CARD) {
+            return {
+              role: "assistant",
+              content: `${m.content.title}: ${m.content.description}\n${m.content.items?.join("\n") || ""}`
+            };
+          }
+          if (m.content.type === ContentType.LIST) {
+            return {
+              role: "assistant",
+              content: `${m.content.title}:\n${m.content.items.join("\n")}`
+            };
+          }
+
+          // fallback
+          return { role: "assistant", content: JSON.stringify(m.content) };
+        }
+        return { role: m.role, content: m.content };
+      });
+
+
     setMessages((prev) => [
       ...prev,
       { role: 'user', content_type: ContentType.TEXT, content: message }
@@ -112,7 +150,7 @@ export default function Chatbot({ apiUrl }: Props) {
       const res = await fetch(`${chatbotUrl}/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, strategy: "function" }),
+        body: JSON.stringify({ message, strategy: "function", history }),
       });
 
       // Append the bot's response simply
@@ -185,11 +223,13 @@ export default function Chatbot({ apiUrl }: Props) {
                 )}
 
                 <div
-                  className={`max-w-xs px-3 py-2 rounded-lg text-sm ${msg.role === 'user'
-                    ? 'bg-green-500 text-white self-end'
-                    : 'bg-gray-100 text-gray-900 self-start'
+                  className={`relative px-3 py-2 rounded-lg text-sm whitespace-pre-line ${msg.role === "user"
+                      ? "bg-green-500 text-white self-end max-w-[75%] user-tail"
+                      : "bg-gray-100 text-gray-900 self-start max-w-[75%] bot-tail"
                     }`}
                 >
+
+
                   {msg.typing ? (
                     <TypingIndicator />
                   ) : msg.content_type === ContentType.TEXT ? (

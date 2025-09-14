@@ -4,4 +4,5 @@ export enum ContentType {
   CAROUSEL = 'carousel',
   BUTTON = 'button',
   LINK = 'link',
+  LIST = 'list',
 }

@@ -19,10 +19,10 @@ export default function CardComponent({ title, description, action_url, action_l
       <p className="text-gray-700 mb-4">{description}</p>
       {action_url && (
         <a
-          href={action_url}
+          href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+          className="inline-block bg-green-600 text-white px-4 py-2 mt-2 rounded-md hover:bg-green-700 text-sm font-medium text-center whitespace-normal break-words"
         >
           {action_label || "Learn more"}
         </a>
