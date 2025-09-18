@@ -9,9 +9,10 @@ type CardProps = {
   items?: string[];
   action_url?: string;
   action_label?: string;
+  follow_up?: string;
 };
 
-export default function CardComponent({ title, description, items, action_url, action_label }: CardProps) {
+export default function CardComponent({ title, description, items, action_url, action_label,follow_up }: CardProps) {
   const link = normalizeUrl(action_url);
 
   return (
@@ -34,6 +35,11 @@ export default function CardComponent({ title, description, items, action_url, a
         >
           {action_label || "Learn more"}
         </a>
+      )}
+      {follow_up && (
+        <p className="text-sm text-gray-500 mt-3 italic">
+          {follow_up}
+        </p>
       )}
     </div>
   );

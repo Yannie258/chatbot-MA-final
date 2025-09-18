@@ -22,8 +22,12 @@ def get_card_schema():
                     "action_label": {
                         "type": "string",
                         "description": "Optional button text for action_url"
-                    }
                     },
+                    "follow_up": {
+                        "type": "string",
+                        "description": "A short suggestion for a follow-up question or next step"
+                    }
+                },
                 "required": ["type", "title", "description", "action_label"]
             }
         }
@@ -43,6 +47,10 @@ def get_button_schema():
                     "options": {
                         "type": "array",
                         "items": {"type": "string"}
+                    },
+                    "follow_up": {
+                        "type": "string",
+                        "description": "A short suggestion for a follow-up question or next step"
                     }
                 },
                 "required": ["type", "title", "options"]
@@ -68,7 +76,11 @@ def get_carousel_schema():
                                 "title": {"type": "string"},
                                 "description": {"type": "string"},
                                 "action_url": {"type": "string"},
-                                "action_label": {"type": "string"}
+                                "action_label": {"type": "string"},
+                                "follow_up": {
+                                    "type": "string",
+                                    "description": "A short suggestion for a follow-up question or next step"
+                                }
                             },
                             "required": ["title", "description"]
                         }

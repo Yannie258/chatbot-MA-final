@@ -5,9 +5,10 @@ type QuickReplyButtons = {
   title?: string;
   options: string[];
   onSelect: (value: string) => void;
+  follow_up?: string;
 };
 
-export default function QuickReplyButtons({ title, options, onSelect }: QuickReplyButtons) {
+export default function QuickReplyButtons({ title, options, onSelect, follow_up }: QuickReplyButtons) {
   return (
     <div className="p-2">
       {title && <h4 className="font-semibold mb-2">{title}</h4>}
@@ -21,6 +22,11 @@ export default function QuickReplyButtons({ title, options, onSelect }: QuickRep
             {opt}
           </button>
         ))}
+        {follow_up && (
+              <p className="text-sm text-gray-500 mt-3 italic">
+                {follow_up}
+              </p>
+            )}
       </div>
     </div>
   );

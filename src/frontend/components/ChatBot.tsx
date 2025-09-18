@@ -275,36 +275,12 @@ export default function Chatbot({ apiUrl }: Props) {
               placeholder="Type a message..."
             />
             <button
-              type="button"
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="px-2 text-green-600 hover:text-green-800"
-              title="Settings"
-            >
-              ⚙️
-            </button>
-            <button
               type="submit"
               className="bg-green-600 text-white px-3 rounded-md text-sm hover:bg-green-700"
             >
               Send
             </button>
           </form>
-          {isSettingsOpen && (
-            <div className="absolute bottom-16 right-0 w-64 bg-white border rounded-md shadow-lg p-4 text-sm">
-              <h3 className="font-bold mb-2">Settings</h3>
-              <div className="mb-2">
-                <label className="block mb-1 font-semibold">Will be developed, please come back later on! Thank you! </label>
-
-              </div>
-              <button
-                className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
-                onClick={() => setIsSettingsOpen(false)}
-              >
-                Close
-              </button>
-            </div>
-          )}
-
         </div>
       )}
     </div>
