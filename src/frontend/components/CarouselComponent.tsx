@@ -6,15 +6,21 @@ type CarouselItem = {
   description: string;
   action_url?: string;
   action_label?: string;
-  follow_up?: string;
+};
+
+type FollowUp = {
+  title: string;
+  options: string[];
 };
 
 type CarouselProps = {
   type: ContentType.CAROUSEL;
   items: CarouselItem[];
+  follow_up?: FollowUp;
+  onUserAction?: (choice: string) => void; 
 };
 
-export default function CarouselComponent({ items }: CarouselProps) {
+export default function CarouselComponent({ items,follow_up, onUserAction }: CarouselProps) {
   return (
     <div className="flex overflow-x-auto space-x-4 p-2">
       {items.map((item, idx) => {
@@ -37,14 +43,25 @@ export default function CarouselComponent({ items }: CarouselProps) {
                 {item.action_label || "Learn more"}
               </a>
             )}
-            {item.follow_up && (
-              <p className="text-sm text-gray-500 mt-3 italic">
-                {item.follow_up}
-              </p>
-            )}
           </div>
         )
       })}
+      {follow_up && (
+        <div className="mt-3">
+          <h5 className="text-sm font-semibold mb-2">You might know more about:</h5>
+          <div className="flex flex-wrap gap-2">
+            {follow_up.options.map((option, idx) => (
+              <button
+                key={idx}
+                onClick={() => onUserAction?.(option)}
+                className="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 w-[150px] text-center"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

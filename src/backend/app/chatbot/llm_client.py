@@ -84,11 +84,11 @@ def generate_response_structured(user_message: str, context: str, history=None) 
         - Always answer in English.
         - Use ONLY the given TU Chemnitz context. Do not invent or guess.
         - Descriptions must be at least 2–3 sentences long.
-        - For cards: if steps or requirements exist, include at least 3 numbered items in the 'items' field. 
+        - For cards: if steps or requirements exist, include at least 3 numbered items in the 'items' field and there is title (bold) for every item
         - Buttons must always have clear labels, not too long (max 4 words).
         - Carousels must contain at least 2 cards, each with its own title and description.
-        - Every response must include a "follow_up" field.
-        - The follow_up should be a short, friendly suggestion that keeps the conversation going.
+        - Every response must include a "follow_up_option" field.
+        - The follow_up_option should be a short, friendly suggestion that keeps the conversation going.
         - It must be context-specific (related to the topic in the card).
         - Avoid generic questions like "What information are you looking for?".
         - Example follow_up: 

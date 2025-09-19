@@ -81,15 +81,23 @@ def get_carousel_schema():
                                 "description": {"type": "string"},
                                 "action_url": {"type": "string"},
                                 "action_label": {"type": "string"},
-                                "follow_up_options": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
-                                    "description": "Suggested next questions as quick reply buttons"
-                                }
                             },
                             "required": ["title", "description"]
                         }
-                    }
+                    },
+                    "follow_up": {
+                                    "type": "object",
+                                    "properties": {
+                                        "title": {"type": "string", "enum":["carousel"]},
+                                        "options": {
+                                            "type": "array",
+                                            "items": {"type": "string"},
+                                            "minItems": 2,
+                                            "maxItems": 5
+                                        }
+                                    },
+                                    "required": ["title", "options"]
+                                }
                 },
                 "required": ["type", "items"]
             }

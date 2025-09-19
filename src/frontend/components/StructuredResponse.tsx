@@ -19,7 +19,7 @@ export default function StructuredResponse({ response, onUserAction }: Structure
     case "button":
       return <QuickReplyButtons {...response.content} onSelect={onUserAction} />;
     case "carousel":
-      return <CarouselComponent {...response.content} />;
+      return <CarouselComponent {...response.content} onUserAction={onUserAction}/>;
     case "link":
       return <LinkList {...response.content} />;
     default:
