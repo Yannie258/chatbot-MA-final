@@ -15,7 +15,7 @@ export default function StructuredResponse({ response, onUserAction }: Structure
 
   switch (type) {
     case "card":
-      return <CardComponent {...response.content} />;
+      return <CardComponent {...response.content} onUserAction={onUserAction} />;
     case "button":
       return <QuickReplyButtons {...response.content} onSelect={onUserAction} />;
     case "carousel":

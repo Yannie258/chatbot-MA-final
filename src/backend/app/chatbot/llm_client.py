@@ -13,9 +13,9 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def generate_response(user_message: str, strategy="plain", history=None) -> ChatResponse:
     context = retrieve_context(user_message)
     if strategy == "plain":
-        return generate_response_plain(user_message, context)
+        return generate_response_plain(user_message, context, history)
     elif strategy == "function":
-        return generate_response_structured(user_message, context)
+        return generate_response_structured(user_message, context, history)
     else:
         raise ValueError(f"Unknown strategy: {strategy}")
 
@@ -103,27 +103,10 @@ def generate_response_structured(user_message: str, context: str, history=None) 
             "action_label": "Visit Website" }
 
         FOLLOW-UP RULES:
-        - Never ask yes/no questions in follow_up field
-        - Always provide specific, actionable options using buttons
-        - Example good follow-ups:
-        "Would you like me to explain residence registration?" → 
-        Use button schema with options: ["Explain Residence Registration", "Show Housing Options", "Other Questions"]
+        - If follow-up is needed, provide specific options in the "follow_up_options" field as an array of strings
+        - Options should be clear, 2–5 words each (max 4 items)
+        - Avoid generic options like "yes" or "no"
 
-        Bad: "Would you like more information?"
-        Good: Provide buttons with specific topics
-
-        CONTEXT HANDLING:
-        - If user responds with "yes", "no", "sure", "please" etc., check the conversation history
-        - Look for the last follow-up question you asked
-        - Respond accordingly:
-        * "yes" = provide the information you offered
-        * "no" = offer alternative topics or ask what else they need
-        - Always reference what you previously offered in follow-up
-
-        Example:
-        Previous bot: "Would you like me to explain residence registration?"
-        User: "yes"
-        Response: Understand this means "explain residence registration" and provide that information
         """
     }
 ]

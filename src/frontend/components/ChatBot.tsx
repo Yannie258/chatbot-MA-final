@@ -84,12 +84,10 @@ type Props = {
 }
 
 export default function Chatbot({ apiUrl }: Props) {
-  //const [isOpen, setIsOpen] = useState(false)
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const chatbotUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  //const [selectedOutputStrategyFormat, setSelectedOutputStrategyFormat] = useState('plain');
 
   // Load saved strategy from localStorage on component mount
   useEffect(() => {
@@ -113,25 +111,10 @@ export default function Chatbot({ apiUrl }: Props) {
     const history = messages
       .filter((m) => !m.typing)
       .map((m) => {
-        if (m.role === "bot" && typeof m.content !== "string") {
-          // Flatten structured response into readable text
-          if (m.content.type === ContentType.CARD) {
-            return {
-              role: "assistant",
-              content: `${m.content.title}: ${m.content.description}\n${m.content.items?.join("\n") || ""}`
-            };
-          }
-          if (m.content.type === ContentType.LIST) {
-            return {
-              role: "assistant",
-              content: `${m.content.title}:\n${m.content.items.join("\n")}`
-            };
-          }
-
-          // fallback
+        if (m.role === "bot") {
           return { role: "assistant", content: JSON.stringify(m.content) };
         }
-        return { role: m.role, content: m.content };
+        return { role: "user", content: m.content };
       });
 
 
@@ -224,8 +207,8 @@ export default function Chatbot({ apiUrl }: Props) {
 
                 <div
                   className={`relative px-3 py-2 rounded-lg text-sm whitespace-pre-line ${msg.role === "user"
-                      ? "bg-green-500 text-white self-end max-w-[75%] user-tail"
-                      : "bg-gray-100 text-gray-900 self-start max-w-[75%] bot-tail"
+                    ? "bg-green-500 text-white self-end max-w-[75%] user-tail"
+                    : "bg-gray-100 text-gray-900 self-start max-w-[75%] bot-tail"
                     }`}
                 >
 

@@ -23,10 +23,12 @@ def get_card_schema():
                         "type": "string",
                         "description": "Optional button text for action_url"
                     },
-                    "follow_up": {
-                        "type": "string",
-                        "description": "A short suggestion for a follow-up question or next step"
+                    "follow_up_options": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Suggested next questions as quick reply buttons"
                     }
+
                 },
                 "required": ["type", "title", "description", "action_label"]
             }
@@ -48,10 +50,12 @@ def get_button_schema():
                         "type": "array",
                         "items": {"type": "string"}
                     },
-                    "follow_up": {
-                        "type": "string",
-                        "description": "A short suggestion for a follow-up question or next step"
+                    "follow_up_options": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Suggested next questions as quick reply buttons"
                     }
+
                 },
                 "required": ["type", "title", "options"]
             }
@@ -77,9 +81,10 @@ def get_carousel_schema():
                                 "description": {"type": "string"},
                                 "action_url": {"type": "string"},
                                 "action_label": {"type": "string"},
-                                "follow_up": {
-                                    "type": "string",
-                                    "description": "A short suggestion for a follow-up question or next step"
+                                "follow_up_options": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Suggested next questions as quick reply buttons"
                                 }
                             },
                             "required": ["title", "description"]
@@ -95,19 +100,30 @@ def get_link_schema():
     return {
         "type": "function",
         "function": {
-            "name": "create_link",
-            "description": "Generate a structured link element",
+            "name": "create_link_list",
+            "description": "Generate a list of structured links",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "type": {"type": "string", "enum": ["link"]},
                     "label": {"type": "string"},
-                    "url": {"type": "string"}
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {"type": "string"},
+                                "url": {"type": "string"}
+                            },
+                            "required": ["label", "url"]
+                        }
+                    }
                 },
-                "required": ["type", "label", "url"]
+                "required": ["type", "links"]
             }
         }
     }
+
 
 def get_all_schemas():
     return [
