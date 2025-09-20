@@ -12,25 +12,23 @@ def get_card_schema():
                     "description": {"type": "string"},
                     "items": {
                         "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Each item must be a clear, detailed step with enough explanation so that an international student could follow it without guessing. Avoid one-word or vague answers."
+                        "items": {"type": "string"}
                     },
-                    "action_url": {
-                        "type": "string",
-                        "description": "Optional link to relevant resource"
-                    },
-                    "action_label": {
-                        "type": "string",
-                        "description": "Optional button text for action_url"
-                    },
+                    "action_url": {"type": "string"},
+                    "action_label": {"type": "string"},
                     "follow_up_options": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Suggested next questions as quick reply buttons"
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "options": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            }
+                        },
+                        "required": ["title", "options"] 
                     }
-
                 },
-                "required": ["type", "title", "description", "action_label"]
+                "required": ["type", "title", "description"]
             }
         }
     }
@@ -40,34 +38,34 @@ def get_button_schema():
         "type": "function",
         "function": {
             "name": "create_buttons",
-            "description": "Generate quick reply buttons with labels",
+            "description": "Generate quick reply buttons for user selection",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "type": {"type": "string", "enum": ["button"]},
                     "title": {"type": "string"},
+                    "description": {
+                        "type": "string",
+                        "description": "Brief context or instruction"
+                    },
                     "options": {
                         "type": "array",
-                        "items": {"type": "string"}
-                    },
-                    "follow_up_options": {
-                        "type": "array",
                         "items": {"type": "string"},
-                        "description": "Suggested next questions as quick reply buttons"
+                        "minItems": 2,
+                        "maxItems": 5,
+                        "description": "Clear, actionable button labels"
                     }
-
                 },
                 "required": ["type", "title", "options"]
             }
         }
     }
-
 def get_carousel_schema():
     return {
         "type": "function",
         "function": {
             "name": "create_carousel",
-            "description": "Generate a carousel with multiple cards",
+            "description": "Brief description or follow-up encouragement",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -83,12 +81,13 @@ def get_carousel_schema():
                                 "action_label": {"type": "string"},
                             },
                             "required": ["title", "description"]
-                        }
+                        },
+                        "description": "At least 2 cards with distinct information"
                     },
-                    "follow_up": {
+                    "follow_up_options": {
                                     "type": "object",
                                     "properties": {
-                                        "title": {"type": "string", "enum":["carousel"]},
+                                        "title": {"type": "string"},
                                         "options": {
                                             "type": "array",
                                             "items": {"type": "string"},
@@ -108,13 +107,17 @@ def get_link_schema():
     return {
         "type": "function",
         "function": {
-            "name": "create_link_list",
-            "description": "Generate a list of structured links",
+            "name": "create_link",
+            "description": "Generate a structured list of relevant links (max 3)",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "type": {"type": "string", "enum": ["link"]},
-                    "label": {"type": "string"},
+                    "type": {"type": "string", "enum": ["link","links"]},
+                    "label": {"type": "string", "description": "Title for the link group (e.g., 'Enrollment Resources')"},
+                    "description": {
+                        "type": "string", 
+                        "description": "Brief description encouraging further questions"
+                    },
                     "links": {
                         "type": "array",
                         "items": {
@@ -124,14 +127,15 @@ def get_link_schema():
                                 "url": {"type": "string"}
                             },
                             "required": ["label", "url"]
-                        }
+                        },
+                        "minItems": 1,
+                        "maxItems": 3
                     }
                 },
-                "required": ["type", "links"]
+                "required": ["type", "links", "link"]
             }
         }
     }
-
 
 def get_all_schemas():
     return [

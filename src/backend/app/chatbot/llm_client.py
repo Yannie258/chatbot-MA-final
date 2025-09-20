@@ -74,12 +74,39 @@ def generate_response_structured(user_message: str, context: str, history=None) 
 
         STRICT RULES:
         - Always respond in structured JSON using the provided schemas.
-        - Choose the schema that best fits the question:
-            • Use "card" when the answer requires detailed explanation with steps and an action link.  
-            • Use "button" (quick replies) when the user should select one option from 2–5 choices.  
-            • Use "carousel" when multiple related items should be shown side by side (e.g., dorms, cafeterias).  
-            • Use "link" when only a single resource is relevant.  
 
+
+        FUNCTION SELECTION GUIDELINES:
+            Choose the appropriate function based on the user's question:
+
+            Use create_card when:
+            - User asks "How to..." questions requiring step-by-step processes
+            - Detailed explanations with procedures, requirements needed
+            - Examples: "How do I register?", "What documents do I need?"
+
+            Use create_buttons when:
+            - User asks broad/vague questions needing clarification
+            - Multiple topics available for selection (2-5 options)
+            - Examples: "Tell me about housing", "I need help"
+
+            Use create_carousel when:
+            - User asks about multiple similar items for comparison
+            - Questions about options, types, varieties
+            - Examples: "What housing options?", "Show meal plans"
+
+            Use create_link when:
+            - Use `create_link` when providing one or more links (1–3).  
+            - Always set `"type": "link"`.  
+            - Include `"label"`, `"description"`, and an array `"links"` with objects containing `"label"` and `"url"`.
+            - Use 'links' when specific resources/forms are needed (can be single or multiple related links).
+            - Link examples:
+                - Single: "Where is the application form?" → one link
+                - Multiple: "I need enrollment documents" → application form, fee payment, document checklist
+            - Include a helpful description encouraging further questions:
+                - Example: "Here are the enrollment resources. Feel free to ask if you need help with specific forms or procedures."
+
+            
+        
         GENERAL INSTRUCTIONS:
         - Always answer in English.
         - Use ONLY the given TU Chemnitz context. Do not invent or guess.
@@ -138,8 +165,20 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     else:
         parsed_output = {"error": "No function call produced"}
 
+  # normalize type for frontend ContentType enum
+    resp_type = parsed_output.get("type", "text").lower()
+
+# Map schema type → FE ContentType
+    type_map = {
+        "card": "card",
+        "button": "button",
+        "carousel": "carousel",
+        "link": "link"
+}
+
     return ChatResponse(
         role="bot",
-        content_type=parsed_output.get("type", "json"),
+        content_type=type_map.get(resp_type,'json'),
         content=parsed_output
     )
+

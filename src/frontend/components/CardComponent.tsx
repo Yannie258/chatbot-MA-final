@@ -2,6 +2,10 @@ import { ContentType } from "@/enums/ContentType";
 import { normalizeUrl } from "@/utils/utils";
 import ReactMarkdown from "react-markdown";
 
+type FollowUpOptions = {
+  title: string;
+  options: string[];
+};
 
 type CardProps = {
   type: ContentType.CARD;
@@ -10,7 +14,7 @@ type CardProps = {
   items?: string[];
   action_url?: string;
   action_label?: string;
-  follow_up_options?: string[];
+  follow_up_options?: FollowUpOptions;
   onUserAction?: (choice: string) => void; // callback for button clicks
 };
 
@@ -36,20 +40,22 @@ export default function CardComponent({ title, description, items, action_url, a
           {action_label || "Learn more"}
         </a>
       )}
-      <p className="py-3">
-        You can get more information about:
-      </p>
-      {follow_up_options && follow_up_options.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {follow_up_options.map((opt, idx) => (
-            <button
-              key={idx}
-              className="w-48 bg-gray-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600"
-              onClick={() => onUserAction?.(opt)}
-            >
-              {opt}
-            </button>
-          ))}
+      {follow_up_options && (
+        <div className="pt-3 border-t border-gray-100">
+          <h5 className="text-sm font-medium text-gray-700 mb-2">
+            {follow_up_options.title}
+          </h5>
+          <div className="flex flex-wrap gap-2">
+            {follow_up_options.options.map((option, idx) => (
+              <button
+                key={idx}
+                onClick={() => onUserAction?.(option)}
+                className="px-3 py-1.5 bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-700 rounded-md text-sm font-medium transition-colors"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
