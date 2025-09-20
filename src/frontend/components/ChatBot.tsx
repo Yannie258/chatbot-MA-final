@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import TypingIndicator from './TypingIndicator';
 import StructuredResponse from './StructuredResponse';
 import { ContentType } from '@/enums/ContentType';
+import remarkGfm from 'remark-gfm';
 
 type TextMessage = {
   role: "user" | "bot";
@@ -112,10 +113,18 @@ export default function Chatbot({ apiUrl }: Props) {
       .filter((m) => !m.typing)
       .map((m) => {
         if (m.role === "bot") {
-          return { role: "assistant", content: JSON.stringify(m.content) };
+          return {
+            role: "assistant",
+            content:
+              m.content_type === ContentType.TEXT
+                ? m.content                // keep plain text clean
+                : JSON.stringify(m.content) // stringify only structured objects
+          };
         }
         return { role: "user", content: m.content };
       });
+
+
 
 
     setMessages((prev) => [
@@ -133,19 +142,51 @@ export default function Chatbot({ apiUrl }: Props) {
       const res = await fetch(`${chatbotUrl}/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, strategy: "function", history }),
+        body: JSON.stringify({ message, strategy: "plain", history }),
       });
 
       // Append the bot's response simply
       //setMessages((prev) => [...prev, data]);
 
       const data = await res.json();
+      console.log("RAW backend data:", data);
 
-      // Remove typing indicator and add real response after get reply from backend
+      // --- Fix goes here ---
+      // unwrap quotes or JSON-encoded strings
+      if (data.content_type === ContentType.TEXT && typeof data.content === "string") {
+        try {
+          if (data.content.startsWith('"') && data.content.endsWith('"')) {
+            data.content = JSON.parse(data.content); // parse cleanly
+          } else {
+            data.content = data.content.replace(/^"(.*)"$/, "$1");
+          }
+        } catch (e) {
+          console.warn("Could not parse content, using raw:", data.content);
+        }
+      }
+
+      // --- Now build normalized ---
+      let normalized: Message;
+      if (data.content_type === ContentType.TEXT) {
+        normalized = {
+          role: "bot",
+          content_type: ContentType.TEXT,
+          content: data.content, // ✅ now cleaned
+        };
+      } else {
+        normalized = {
+          role: "bot",
+          content_type: data.content_type,
+          content: data.content,
+        } as Message;
+      }
+
       setMessages((prev) => [
         ...prev.filter((m) => !m.typing),
-        data,
+        normalized,
       ]);
+
+
     } catch (error) {
       console.error("Error fetching response:", error);
       // Replace typing with error
@@ -206,7 +247,7 @@ export default function Chatbot({ apiUrl }: Props) {
                 )}
 
                 <div
-                  className={`relative px-3 py-2 rounded-lg text-sm whitespace-pre-line ${msg.role === "user"
+                  className={`relative px-3 py-2 rounded-lg text-sm ${msg.role === "user"
                     ? "bg-green-500 text-white self-end max-w-[75%] user-tail"
                     : "bg-gray-100 text-gray-900 self-start max-w-[75%] bot-tail"
                     }`}
@@ -216,9 +257,31 @@ export default function Chatbot({ apiUrl }: Props) {
                   {msg.typing ? (
                     <TypingIndicator />
                   ) : msg.content_type === ContentType.TEXT ? (
-                    <div className="prose prose-sm max-w-none leading-relaxed space-y-3">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
+                    <>
+                      <div className="prose prose-sm max-w-none leading-relaxed space-y-3">
+                        <ReactMarkdown>
+                          {(() => {
+                            if (typeof msg.content === "string") {
+                              try {
+                                // if it's a JSON string (with extra quotes), parse it
+                                if (msg.content.startsWith('"') && msg.content.endsWith('"')) {
+                                  return JSON.parse(msg.content);
+                                }
+                                return msg.content;
+                              } catch {
+                                return msg.content;
+                              }
+                            }
+                            return JSON.stringify(msg.content, null, 2);
+                          })()}
+                        </ReactMarkdown>
+
+
+
+                      </div>
+
+                    </>
+
                   ) : (
                     <StructuredResponse
                       response={msg}

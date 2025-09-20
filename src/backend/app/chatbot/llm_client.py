@@ -52,10 +52,14 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
         temperature=0.2
     )
 
+    msg_content = response.choices[0].message.content
+    import logging
+    logging.info(f"RAW OpenAI content type={type(msg_content)} value={repr(msg_content)}")
+
     return ChatResponse(
         role="bot",
         content_type="text",
-        content=response.choices[0].message.content
+        content=msg_content
     )
 
 # Configure logging
