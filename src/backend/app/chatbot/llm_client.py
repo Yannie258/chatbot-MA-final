@@ -1,5 +1,6 @@
 import logging
 import os, json
+import time
 from openai import OpenAI
 from models.chat_response import ChatResponse
 from models.schemas import get_all_schemas
@@ -12,12 +13,20 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # ---------------------------
 def generate_response(user_message: str, strategy="plain", history=None) -> ChatResponse:
     context = retrieve_context(user_message)
+    
+    start_time = time.time()
+    
     if strategy == "plain":
-        return generate_response_plain(user_message, context, history)
+        response = generate_response_plain(user_message, context, history)
     elif strategy == "function":
-        return generate_response_structured(user_message, context, history)
+        response = generate_response_structured(user_message, context, history)
     else:
         raise ValueError(f"Unknown strategy: {strategy}")
+    
+    duration = time.time() - start_time
+    logging.info(f"Response generated in {duration*1000:.2f}ms using {strategy} strategy")
+    
+    return response
 
 # ---------------------------
 # Version A – plain
@@ -31,6 +40,9 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
 
     Answer in **plain natural text** only.
     - in English
+    - Use single newline `\n` to separate items or sentences within the same section.
+    - Use double newline `\n\n` only to separate major sections.
+    - Keep outputs compact: avoid unnecessary blank lines.
     - Be clear and concise
     - Use bold headlines
     - Bullet points for lists
@@ -169,16 +181,16 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     else:
         parsed_output = {"error": "No function call produced"}
 
-  # normalize type for frontend ContentType enum
+    # normalize type for frontend ContentType enum
     resp_type = parsed_output.get("type", "text").lower()
 
-# Map schema type → FE ContentType
+    # Map schema type to FE ContentType
     type_map = {
         "card": "card",
         "button": "button",
         "carousel": "carousel",
         "link": "link"
-}
+    }
 
     return ChatResponse(
         role="bot",

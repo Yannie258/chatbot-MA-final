@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import TypingIndicator from './TypingIndicator'
 import { ContentType } from '@/enums/ContentType'
 
@@ -141,17 +140,16 @@ export default function PlainChatBot({ apiUrl }: Props) {
 
                                 <div
                                     className={`relative px-3 py-2 rounded-lg text-sm ${msg.role === 'user'
-                                            ? 'bg-green-500 text-white self-end max-w-[75%] user-tail'
-                                            : 'bg-gray-100 text-gray-900 self-start max-w-[75%] bot-tail'
+                                        ? 'bg-green-500 text-white self-end max-w-[75%] user-tail'
+                                        : 'bg-gray-100 text-gray-900 self-start max-w-[75%] bot-tail'
                                         }`}
                                 >
                                     {msg.typing ? (
                                         <TypingIndicator />
                                     ) : (
                                         <div className="prose prose-sm max-w-full break-words whitespace-pre-wrap">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                {msg.content}
-                                            </ReactMarkdown>
+                                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+
                                         </div>
 
                                     )}
