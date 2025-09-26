@@ -1,13 +1,20 @@
 import React from 'react';
-import { GraduationCap } from 'lucide-react';
+import Image from 'next/image';
 
 const Header = () => {
     return (
         <div className="flex flex-col items-center justify-center text-center px-4 py-16">
           <div className="mb-8">
-            <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mb-4 mx-auto">
-              <GraduationCap className="text-white" size={32} />
+            <div className="rounded-full flex items-center justify-center mb-4 mx-auto">
+            <Image
+                    src="/png_eng/KHS_TUC_farbig.png"
+                    alt="TUC_Logo"
+                    width={240}
+                    height={240}
+                    className="rounded-full mr-2"
+                  />
             </div>
+          
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
               Welcome to <span className="text-green-600">TU Chemnitz</span>
             </h1>

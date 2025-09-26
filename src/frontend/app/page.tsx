@@ -13,8 +13,8 @@ export default function Home() {
         <Header />
         <MainSessions />
         <Footer />
-        {/* <ChatBot apiUrl="http://localhost:8000/chatbot" /> */}
-        <PlainChatBot apiUrl={apiUrl} />
+         <ChatBot apiUrl={apiUrl} /> 
+        {/* <PlainChatBot apiUrl={apiUrl} /> */}
       </div>
     </>
   );

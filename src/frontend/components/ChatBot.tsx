@@ -142,7 +142,7 @@ export default function Chatbot({ apiUrl }: Props) {
       const res = await fetch(`${chatbotUrl}/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, strategy: "plain", history }),
+        body: JSON.stringify({ message, strategy: "function", history }),
       });
 
       // Append the bot's response simply
