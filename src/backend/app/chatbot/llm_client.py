@@ -71,7 +71,8 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     return ChatResponse(
         role="bot",
         content_type="text",
-        content=msg_content
+        content=msg_content,
+        history=history
     )
 
 # Configure logging
@@ -109,6 +110,7 @@ def generate_response_structured(user_message: str, context: str, history=None) 
             - User asks about multiple similar items for comparison
             - Questions about options, types, varieties
             - Examples: "What housing options?", "Show meal plans"
+            - MANDATORY: Each carousel item MUST include action_url and action_label when relevant links exist
 
             Use create_link when:
             - Use `create_link` when providing one or more links (1–3).  
@@ -122,6 +124,13 @@ def generate_response_structured(user_message: str, context: str, history=None) 
                 - Example: "Here are the enrollment resources. Feel free to ask if you need help with specific forms or procedures."
 
             
+        LINK REQUIREMENTS:
+        - For carousels: Each item should have action_url and action_label when a relevant link exists
+        - For cards: Include action_url and action_label for primary related resource
+        - Use descriptive action labels:
+          - SHOULD use:  "View Program Details", "Download Application", "Check Requirements"
+          - NOT use: "Learn More", "Click Here", "Read More"
+        - Prefer official TU Chemnitz pages over generic information
         
         GENERAL INSTRUCTIONS:
         - Always answer in English.
@@ -195,6 +204,7 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     return ChatResponse(
         role="bot",
         content_type=type_map.get(resp_type,'json'),
-        content=parsed_output
+        content=parsed_output,
+        history=history
     )
 
