@@ -1,4 +1,4 @@
-MAX_TURNS = 3  # number of user turns to remember
+MAX_TURNS = 5  # number of user turns to remember
 
 def update_history(history, user_message, assistant_message):
     if history is None:
