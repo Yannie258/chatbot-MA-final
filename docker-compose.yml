@@ -1,18 +1,18 @@
 services:
   frontend:
     build:
-      context: ./frontend
+      context: ./src/frontend
       dockerfile: Dockerfile
       target: development  # Explicitly use development stage
     volumes:
-      - ./frontend:/app
+      - ./src/frontend:/app
       - /app/node_modules
       - /app/.next
     command: npm run dev
     ports:
       - "3000:3000"
     env_file:
-      - ./frontend/.env.local
+      - ./src/frontend/.env.local
 
     environment:
       - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
@@ -23,10 +23,10 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./src/backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend/app:/app
+      - ./src/backend/app:/app
       - /app/.venv  # For Python virtualenv
     ports:
       - "8000:8000"
