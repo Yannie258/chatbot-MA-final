@@ -79,6 +79,7 @@ def get_carousel_schema():
                                 "description": {"type": "string"},
                                 "action_url": {"type": "string"},
                                 "action_label": {"type": "string"},
+                                
                             },
                             "required": ["title", "description"]
                         },
