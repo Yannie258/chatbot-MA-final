@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown';
 import TypingIndicator from './TypingIndicator';
 import StructuredResponse from './StructuredResponse';
 import { ContentType } from '@/enums/ContentType';
-import remarkGfm from 'remark-gfm';
 
 type TextMessage = {
   role: "user" | "bot";
@@ -88,7 +87,6 @@ export default function Chatbot({ apiUrl }: Props) {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const chatbotUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Load saved strategy from localStorage on component mount
   useEffect(() => {
