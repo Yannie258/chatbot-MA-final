@@ -11,6 +11,8 @@ RUN apt-get update && \
 ENV VIRTUAL_ENV=/app/.venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PYTHONPATH=/app/app
+
 
 # Install Python dependencies
 COPY requirements.txt .
