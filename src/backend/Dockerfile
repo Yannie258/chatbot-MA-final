@@ -23,7 +23,7 @@ RUN pip install -r requirements.txt
 COPY ./app ./app
 
 # Copy FAISS index files
-COPY ./app/vector_index ./app/vector_index
+COPY ./app/vector_index ./vector_index
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
