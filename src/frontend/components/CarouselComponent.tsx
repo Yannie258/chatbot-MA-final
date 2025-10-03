@@ -22,6 +22,16 @@ type CarouselProps = {
 };
 
 export default function CarouselComponent({ items, follow_up_options, onUserAction }: CarouselProps) {
+  // Move useState outside the map - track expanded state for each item
+  const [expandedItems, setExpandedItems] = useState<{ [key: number]: boolean }>({});
+
+  const toggleExpanded = (index: number) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   return (
     <div className="w-full">
       {/* Carousel Section */}
@@ -29,7 +39,8 @@ export default function CarouselComponent({ items, follow_up_options, onUserActi
         <div className="flex space-x-3 min-w-max px-2">
           {items.map((item, idx) => {
             const link = item.action_url ? normalizeUrl(item.action_url) : null;
-            const [expanded, setExpanded] = useState(false); // 
+            const expanded = expandedItems[idx] || false;
+            
             return (
               <div
                 key={idx}
@@ -43,7 +54,7 @@ export default function CarouselComponent({ items, follow_up_options, onUserActi
                   {expanded ? item.description : item.description.slice(0, 80) + (item.description.length > 80 ? "..." : "")}
                   {item.description.length > 80 && (
                     <button
-                      onClick={() => setExpanded(!expanded)}
+                      onClick={() => toggleExpanded(idx)}
                       className="ml-1 text-blue-600 hover:underline text-xs"
                     >
                       {expanded ? "Show less" : "Show more"}
@@ -51,6 +62,7 @@ export default function CarouselComponent({ items, follow_up_options, onUserActi
                   )}
                 </p>
 
+                {/* Debug: Add console log to check if link exists */}
                 {link && (
                   <a
                     href={link}
@@ -61,10 +73,16 @@ export default function CarouselComponent({ items, follow_up_options, onUserActi
                     {item.action_label || "Learn more"}
                   </a>
                 )}
+                
+                {/* Debug: Show when no link is available */}
+                {!link && item.action_url && (
+                  <div className="text-red-500 text-xs">
+                    Invalid URL: {item.action_url}
+                  </div>
+                )}
               </div>
             );
           })}
-
         </div>
       </div>
 
