@@ -5,14 +5,25 @@ from openai import OpenAI
 from models.chat_response import ChatResponse
 from models.schemas import get_all_schemas
 from services.rag import retrieve_context
+from helpers.history import update_history
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def build_retrieval_query(user_message, history=None, n=2):
+    """Combine last n user messages with the current query for context-aware retrieval"""
+    if not history:
+        return user_message
+    past_user_msgs = [m["content"] for m in history if m["role"] == "user"]
+    recent_context = " ".join(past_user_msgs[-n:])  # last n user turns
+    return f"{recent_context}\n{user_message}"
+
 
 # ---------------------------
 # Dispatcher
 # ---------------------------
 def generate_response(user_message: str, strategy="plain", history=None) -> ChatResponse:
-    context = retrieve_context(user_message)
+    query_for_retrieval = build_retrieval_query(user_message, history, n=2)
+    context = retrieve_context(query_for_retrieval)
     
     start_time = time.time()
     
@@ -72,7 +83,7 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
         role="bot",
         content_type="text",
         content=msg_content,
-        history=history
+        history=update_history(history, user_message, msg_content)
     )
 
 # Configure logging
@@ -205,6 +216,5 @@ def generate_response_structured(user_message: str, context: str, history=None) 
         role="bot",
         content_type=type_map.get(resp_type,'json'),
         content=parsed_output,
-        history=history
+        history=update_history(history, user_message, json.dumps(parsed_output))
     )
-
