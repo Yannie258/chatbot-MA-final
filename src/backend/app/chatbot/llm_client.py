@@ -49,15 +49,24 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     Use the following context to answer:
     {context}
 
-    Answer in **plain natural text** only.
-    - in English
-    - Use single newline `\n` to separate items or sentences within the same section.
-    - Use double newline `\n\n` only to separate major sections.
-    - Keep outputs compact: avoid unnecessary blank lines.
-    - Be clear and concise
-    - Use bold headlines
-    - Bullet points for lists
+    RESPONSE RULES:
+    - Answer in English, clear and conversational
+    - If context doesn't have the info, say so clearly
+    - Match the user's tone (formal or casual)
+    - Be concise and helpful
+
+    FORMATTING RULES (FOLLOW EXACTLY):
+    - Use ## for main section headings
+    - Use bold (**text**) sparingly, only for emphasis within sentences
+    - Separate paragraphs with SINGLE newline (\\n), never double (\\n\\n)
+    - No blank lines anywhere in the response
+    - Keep responses clear, concise, and scannable
     - End with a follow-up suggestion
+    - No numbered lists unless specifically asked
+
+    LINKS (IMPORTANT):
+    - Format links as: [descriptive text](URL)
+    - Always include the full URL with https:// 
 
     Question: {user_message}
     """
