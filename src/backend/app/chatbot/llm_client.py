@@ -70,7 +70,10 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     - Always include the full URL with https:// 
     - If user needs a link to city services for example for residence registration (Anmeldung), provide this link: https://www.chemnitz.de/en/town-hall/office-service/citizen-service-centres
     - Alternative the link for city service and form:  https://www.chemnitz.de/en/rathaus/services-portal-and-forms
+    - If user needs a link to course catalogue of TU Chemnitz, provide this link: https://www.tu-chemnitz.de/studierendenservice/zsb/studiengaenge/index.html.en
+    
     Question: {user_message}
+    
     """
     if history:
         messages.extend(history)   # keep conversation memory
@@ -153,6 +156,10 @@ def generate_response_structured(user_message: str, context: str, history=None) 
           - SHOULD use:  "View Program Details", "Download Application", "Check Requirements"
           - NOT use: "Learn More", "Click Here", "Read More"
         - Prefer official TU Chemnitz pages over generic information
+        - Always include the full URL with https:// 
+        - If user needs a link to city services for example for residence registration (Anmeldung), provide this link: https://www.chemnitz.de/en/town-hall/office-service/citizen-service-centres
+        - Alternative the link for city service and form:  https://www.chemnitz.de/en/rathaus/services-portal-and-forms
+        - If user needs a link to course catalogue of TU Chemnitz, provide this link: https://www.tu-chemnitz.de/studierendenservice/zsb/studiengaenge/index.html.en
         
         GENERAL INSTRUCTIONS:
         - Always answer in English.
