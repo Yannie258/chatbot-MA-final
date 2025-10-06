@@ -1,7 +1,11 @@
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
+
+class HistoryMessage(BaseModel):
+    role: str
+    content: str
 
 class ChatInput(BaseModel):
     message: str
-    strategy: str | None = None   # optional because /plain and /structured set it
-    history: List[Dict[str, str]] | None = None # chat history
+    strategy: Optional[str] = "plain"
+    history: List[HistoryMessage] = []

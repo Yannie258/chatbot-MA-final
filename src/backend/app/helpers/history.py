@@ -1,4 +1,4 @@
-MAX_TURNS = 5  # number of user turns to remember
+MAX_TURNS = 10  # number of user turns to remember
 
 import tiktoken
 

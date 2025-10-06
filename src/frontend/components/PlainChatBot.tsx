@@ -184,7 +184,10 @@ export default function PlainChatBot({ apiUrl }: Props) {
                         <input
                             type="text"
                             name="message"
-                            className="flex-1 px-2 py-1 border rounded-md mr-2 text-sm"
+                            className="flex-1 px-2 py-1 border rounded-md mr-2 text-sm 
+                                        !text-black dark:!text-black
+                                        bg-white dark:bg-gray-900 
+                                        !placeholder-gray-500 dark:placeholder-gray-400"
                             placeholder="Type a message..."
                         />
                         <button
