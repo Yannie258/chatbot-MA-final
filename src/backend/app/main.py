@@ -14,10 +14,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/chatbot", response_model=ChatResponse)
+@app.post("/chatbot", response_model=ChatResponse, history=input.history)
 def chat(input: ChatInput):
     """Generic dispatcher endpoint (uses input.strategy if provided)"""
-    return generate_response(input.message, input.strategy or "plain")
+    return generate_response(input.message, input.strategy or "plain", history=input.history)
 
 # -----------------------
 # Baseline endpoint (Version A)
@@ -25,7 +25,7 @@ def chat(input: ChatInput):
 @app.post("/chatbot/plain", response_model=ChatResponse)
 def chat_plain(input: ChatInput):
     """Return plain text baseline (no structured output)."""
-    return generate_response(input.message, strategy="plain")
+    return generate_response(input.message, strategy="plain", history=input.history)
 
 # ---------------------------
 # Structured endpoint (Version B)
@@ -33,7 +33,7 @@ def chat_plain(input: ChatInput):
 @app.post("/chatbot/structured", response_model=ChatResponse)
 def chat_structured(input: ChatInput):
     """Return structured output."""
-    return generate_response(input.message, strategy="function")
+    return generate_response(input.message, strategy="function", history=input.history)
 
 @app.get("/health")
 def health_check():
