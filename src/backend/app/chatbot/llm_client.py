@@ -68,7 +68,8 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     LINKS (IMPORTANT):
     - Format links as: [descriptive text](URL)
     - Always include the full URL with https:// 
-
+    - If user needs a link to city services for example for residence registration (Anmeldung), provide this link: https://www.chemnitz.de/en/town-hall/office-service/citizen-service-centres
+    - Alternative the link for city service and form:  https://www.chemnitz.de/en/rathaus/services-portal-and-forms
     Question: {user_message}
     """
     if history:
