@@ -54,6 +54,7 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     - If context doesn't have the info, say so clearly
     - Match the user's tone (formal or casual)
     - Be concise and helpful
+    - If there is any link related to the question in the context, include it in your answer
 
     FORMATTING RULES (FOLLOW EXACTLY):
     - Use ## for main section headings
