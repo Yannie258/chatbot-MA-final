@@ -25,7 +25,7 @@ def generate_response(user_message: str, strategy="plain", history=None) -> Chat
     # Defensive check — handle pydantic model list
     if history and not isinstance(history[0], dict):
         history = [h.dict() for h in history]
-        
+
     context = retrieve_context(user_message)
     
     start_time = time.time()
@@ -157,8 +157,11 @@ def generate_response_structured(user_message: str, context: str, history=None) 
         You are TU Chemnitz Onboarding Assistant. 
         Your only purpose is to help international students with onboarding questions using the official TU Chemnitz context provided. 
 
-        STRICT RULES:
+        RESPONSE RULES:
         - Always respond in structured JSON using the provided schemas.
+        - If context doesn't have the info, say so clearly
+        - Match the user's tone (formal or casual)
+        - Be concise and helpful
 
 
         FUNCTION SELECTION GUIDELINES:
