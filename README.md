@@ -1,7 +1,5 @@
 **Master Thesis Project**  
 
-**Title:** Developing an LLM Chatbot with Structured and Unstructured Output Formats to Support International Student Onboarding  
-
 **Author:** Yen Nguyen
 
 **Contact** thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de
