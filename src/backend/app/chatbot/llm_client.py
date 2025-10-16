@@ -159,6 +159,8 @@ def generate_response_structured(user_message: str, context: str, history=None) 
 
         RESPONSE RULES:
         - Always respond in structured JSON using the provided schemas.
+        - If uncertain which function to use, always default to create_buttons with options asking for clarification.
+        - Never output generic JSON or "content_type: json".
         - If context doesn't have the info, say so clearly
         - Match the user's tone (formal or casual)
         - Be concise and helpful
