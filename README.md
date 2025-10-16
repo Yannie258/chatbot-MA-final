@@ -4,8 +4,6 @@
 
 **Contact** thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de
 
-
-
 ---
 
 ## Getting started
@@ -14,9 +12,9 @@ This project investigates how Large Language Models (LLMs) can produce structure
 
 Two chatbot versions were implemented:
 
-- Version A – Unstructured: Traditional text-based responses similar to ChatGPT-style paragraphs.
+- **Version A – Unstructured:** Traditional text-based responses similar to ChatGPT-style paragraphs.
 
-- Version B – Structured: LLM-generated responses in JSON following pre-defined schemas that map to GUI elements such as cards, buttons, and links.
+- **Version B – Structured:** LLM-generated responses in JSON following pre-defined schemas that map to GUI elements such as cards, buttons, and links.
 
 Both versions share the same retrieval and knowledge sources but differ in output format and rendering logic.
 This allows for a direct comparison between unstructured and structured interactions.
@@ -31,10 +29,27 @@ This allows for a direct comparison between unstructured and structured interact
 
 ## Technical Stack
 
-- Frontend: Modern web technologies for responsive interfaces
-- Backend: RESTful API with LLM integration
-- Containerization: Docker and Docker Compose
-- Data Format: JSON schemas for structured outputs
+### Frontend
+- **Framework:** Next.js (React-based)
+- **Styling:** Tailwind CSS for responsive UI
+- **Rendering Logic:** Dynamic components for structured outputs (`CardComponent`, `CarouselComponent`, `ButtonList`, `LinkList`)
+- **Deployment:** Vercel for cloud hosting and demo access
+
+### Backend
+- **Framework:** FastAPI (Python)
+- **LLM Integration:** OpenAI API 
+- **Retrieval-Augmented Generation (RAG):** Combines document embeddings and context retrieval for accurate answers
+- **Data Storage:** FAISS for vector search and metadata handling
+- **Prompt Management:** Dedicated templates for structured and unstructured outputs
+
+### Containerization
+- **Tooling:** Docker & Docker Compose for reproducible environments
+- **Purpose:** Isolates frontend, backend, and database for easy deployment
+
+### Data & Output Formats
+- **Structured Output:** JSON schemas defining cards, buttons, carousels, and links
+- **Unstructured Output:** Plain text generated via LLM response
+- **Evaluation Data:** Collected from user testing and interviews  
 
 ## Installation (development)
 
