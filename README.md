@@ -74,14 +74,14 @@ Open a terminal and clone the repository from TU Chemnitz GitLab:
 
 **Option 2**: **Extract from Zip**
 
-- Download zip file from GitLab or extract from provided USB
-- Navigate to the project folder
+1. Download zip file from GitLab or extract from provided USB
+2. Navigate to the project folder
 
 ### Step 2: Set Environment Variables
 
-- Create `.env` file and copy `.env.example` to `.env` inside root directories.
+1. Create `.env` file and copy `.env.example` to `.env` inside root directories.
 
-- Fill in your keys or local settings as required.
+2. Fill in your keys or local settings as required.
 
 ### Step 3: Run program in docker
 
@@ -94,11 +94,11 @@ Open a terminal and clone the repository from TU Chemnitz GitLab:
 
 ### Once containers are running:
 
-Frontend for baseline chatbot (only plain text): http://localhost:3000
+- Frontend for baseline chatbot (only plain text): http://localhost:3000
 
-Frontend for structured outputs chatbot: http://localhost:3001
+- Frontend for structured outputs chatbot: http://localhost:3001
 
-Backend API: http://localhost:8000
+- Backend API: http://localhost:8000/docs
 
 ### To stop all services:
 ```bash
@@ -173,10 +173,10 @@ Gratitude is also extended to the international students who participated in the
 
 ## 📜 License
 
-This project was created by **Yen Nguyen** as part of a **Master Thesis** at  **Technische Universität Chemnitz, Faculty of Computer Science**.
+- This project was created by **Yen Nguyen** as part of a **Master Thesis** at  **Technische Universität Chemnitz, Faculty of Computer Science**.
 
-The source code, documentation, and related assets are © 2025 **Yen Nguyen**- All rights reserved.
+- The source code, documentation, and related assets are © 2025 **Yen Nguyen**- All rights reserved.
 
-The project is distributed for **academic and non-commercial research purposes only**. No part of this work may be used for commercial gain without written permission from the author.
+- The project is distributed for **academic and non-commercial research purposes only**. No part of this work may be used for commercial gain without written permission from the author.
 
-For collaboration, academic reuse, or research inquiries, please contact:  thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de or yen.nguyen.ziesche@gmail.com
+- For collaboration, academic reuse, or research inquiries, please contact:  thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de or yen.nguyen.ziesche@gmail.com
