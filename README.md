@@ -173,14 +173,10 @@ Gratitude is also extended to the international students who participated in the
 
 ## 📜 License
 
-This project was created by **Yen Nguyen** as part of a **Master Thesis** at  
-**Technische Universität Chemnitz, Faculty of Computer Science**.
+This project was created by **Yen Nguyen** as part of a **Master Thesis** at  **Technische Universität Chemnitz, Faculty of Computer Science**.
 
-The source code, documentation, and related assets are © 2025 **Yen Nguyen**.  
-All rights reserved.
+The source code, documentation, and related assets are © 2025 **Yen Nguyen**- All rights reserved.
 
-The project is distributed for **academic and non-commercial research purposes only**.  
-No part of this work may be used for commercial gain without written permission from the author.
+The project is distributed for **academic and non-commercial research purposes only**. No part of this work may be used for commercial gain without written permission from the author.
 
-For collaboration, academic reuse, or research inquiries, please contact:  
-thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de
+For collaboration, academic reuse, or research inquiries, please contact:  thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de or yen.nguyen.ziesche@gmail.com
