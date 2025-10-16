@@ -79,9 +79,9 @@ Open a terminal and clone the repository from TU Chemnitz GitLab:
 
 ### Step 2: Set Environment Variables
 
-Copy .env.example to .env inside root directories.
+- Create `.env` file and copy `.env.example` to `.env` inside root directories.
 
-Fill in your keys or local settings as required.
+- Fill in your keys or local settings as required.
 
 ### Step 3: Run program in docker
 
@@ -171,7 +171,7 @@ Gratitude is also extended to the international students who participated in the
 
 - If the author is no longer maintaining this repository, you may fork it for educational or research purposes with proper citation of the original work.
 
-📜 License
+## 📜 License
 
 This project was created by **Yen Nguyen** as part of a **Master Thesis** at  
 **Technische Universität Chemnitz, Faculty of Computer Science**.
