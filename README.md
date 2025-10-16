@@ -1,93 +1,112 @@
-# ma-yen-nguyen
-## Run program in docker
-- open docker desktop
-- from root of project run:
-    ``` 
-    docker compose build
-    
-    docker compose up
-    ```
+**Master Thesis Project**  
 
+**Title:** Developing an LLM Chatbot with Structured and Unstructured Output Formats to Support International Student Onboarding  
+
+**Author:** Yen Nguyen
+
+**Contact** thi-ngoc-yen.nguyen@s2022.tu-chemnitz.de
+
+
+
+---
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+This project investigates how Large Language Models (LLMs) can produce structured, user-customized outputs - such as cards, buttons, carousels, and links — to enhance clarity, usability, and task efficiency for international students during their TU Chemnitz onboarding process.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Two chatbot versions were implemented:
 
-## Add your files
+- Version A – Unstructured: Traditional text-based responses similar to ChatGPT-style paragraphs.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+- Version B – Structured: LLM-generated responses in JSON following pre-defined schemas that map to GUI elements such as cards, buttons, and links.
 
+Both versions share the same retrieval and knowledge sources but differ in output format and rendering logic.
+This allows for a direct comparison between unstructured and structured interactions.
+
+## Features
+
+- **Dual Implementation**: Side-by-side comparison of structured vs. unstructured outputs
+- **Interactive Elements**: Cards, buttons, carousels, and contextual links in structured version
+- **Docker Containerization**: Easy setup and deployment
+- **RESTful API**: Backend service for chatbot functionality
+- **Responsive Frontend**: Modern web interfaces for both versions
+
+## Technical Stack
+
+- Frontend: Modern web technologies for responsive interfaces
+- Backend: RESTful API with LLM integration
+- Containerization: Docker and Docker Compose
+- Data Format: JSON schemas for structured outputs
+
+## Installation (development)
+
+### Step 1: clone the project
+
+**Option 1**: **Clone the Project from GitLab**
+
+Open a terminal and clone the repository from TU Chemnitz GitLab:
+   ```bash
+   ## use SSH
+   git clone git@gitlab.hrz.tu-chemnitz.de:vsr/edu/advising/ma-yen-nguyen.git
+   ## OR use https
+   git clone https://gitlab.hrz.tu-chemnitz.de/vsr/edu/advising/ma-yen-nguyen.git
+   
+   cd ma-yen-nguyen
 ```
-cd existing_repo
-git remote add origin https://gitlab.hrz.tu-chemnitz.de/vsr/edu/advising/ma-yen-nguyen.git
-git branch -M main
-git push -uf origin main
+
+**Option 2**: **Extract from Zip**
+
+- Download zip file from GitLab or extract from provided USB
+- Navigate to the project folder
+
+### Step 2: Set Environment Variables
+
+Copy .env.example to .env inside root directories.
+
+Fill in your keys or local settings as required.
+
+### Step 3: Run program in docker
+
+1. Make sure **Docker Desktop** is running.  
+2. From the **root directory** of the project, run:
+   ```bash
+   docker compose build
+   docker compose up 
+   ```
+
+### Once containers are running:
+
+Frontend for baseline chatbot (only plain text): http://localhost:3000
+
+Frontend for structured outputs chatbot: http://localhost:3001
+
+Backend API: http://localhost:8000
+
+### To stop all services:
+```bash
+docker compose down
 ```
 
-## Integrate with your tools
+## Chat with chatbot
 
-- [ ] [Set up project integrations](https://gitlab.hrz.tu-chemnitz.de/vsr/edu/advising/ma-yen-nguyen/-/settings/integrations)
+After launching the frontend:
+
+- You will see a mock-up website with a chat icon on the bottom-right corner.
+
+- Click the icon to open the chat widget and start your conversation.
+
+- Version A (plain text) displays traditional messages, while Version B (structured) renders interactive UI components like cards, buttons, links, etc.
+
+## Production Deployment
+
+This project has been deployed temporarly in Vercel. For simple user please follow the link:
+- https://chatbot-tuc-plain.vercel.app (for plain text chatbot)
+- https://chatbot-tuc-so.vercel.app/ (for structured outputs chatbot)
+
+** Note: The server can be down if the author stop it. Please contact to author if you if you believe the server is not responding.
+
+## License and Support
+This project is developed as part of academic research at TU Chemnitz. For technical issues or questions about this research project, please refer to author for usage and distribution.
 
 
-## Test and Deploy
 
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
