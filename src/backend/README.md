@@ -1,6 +1,45 @@
-# Run testa scripts
-- from project root run:
-``` 
-    docker compose run --rm backend python scripts/test_benchmark_faiss.py
-    docker compose run --rm backend python scripts/test_benchmark_faiss.py
+# Testing the Retrieval Module (FAISS Benchmark)
+
+To verify that the Retrieval-Augmented Generation (RAG) indexing and retrieval pipeline works correctly, you can run the retrieval test script directly inside the backend environment.
+
+## 1️⃣ Prerequisites
+
+Ensure that the FAISS index has been generated and stored in:
+
+app/vector_index/
+├── index.faiss
+└── index.pkl
+
+
+Your .env file must contain a valid OPENAI_API_KEY.
+
+## 2️⃣ Run the Retrieval Test
+
+From the root of the backend (/app) directory, execute:
+``` bash
+cd /app
+python3 services/test_retrieval.py
 ```
+
+**💡 Important:**
+Do not run the test from inside /app/services/,
+because FAISS expects the vector_index directory to be found relative to the working directory (/app/vector_index).
+
+## Running Inside Docker
+
+If the backend runs in Docker, execute the following from your host machine:
+
+```bash
+docker exec -it <backend_container_name> bash
+cd /app
+python3 services/test_retrieval.py
+```
+
+- You can find the container name using:
+``` bash
+docker ps
+```
+**Log Output:**
+
+- A log file named retrieval_benchmark.log is automatically generated 
+- This file contains detailed timing and similarity retrieval results that can be referenced in performance documentation or appendices.
