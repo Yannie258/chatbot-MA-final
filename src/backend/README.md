@@ -30,8 +30,9 @@ because FAISS expects the vector_index directory to be found relative to the wor
 If the backend runs in Docker, execute the following from your host machine:
 
 ```bash
-docker exec -it <backend_container_name> bash
-cd /app
+# go to backend container
+docker exec -it chatbot_ma_thesis-backend-1 bash
+
 python3 services/test_retrieval.py
 ```
 
@@ -43,3 +44,15 @@ docker ps
 
 - A log file named retrieval_benchmark.log is automatically generated 
 - This file contains detailed timing and similarity retrieval results that can be referenced in performance documentation or appendices.
+
+### Run build_index:
+If the backend runs in Docker, execute the following from your host machine:
+
+```bash
+# go to backend container
+docker exec -it chatbot_ma_thesis-backend-1 bash
+python3 scripts/build_index.py
+```
+
+- This command runs the indexing pipeline that processes all PDF documents inside the data/ directory.
+- The console output will display the number of PDF files loaded, their total page count, and the total number of text chunks created
