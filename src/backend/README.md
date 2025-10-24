@@ -13,9 +13,13 @@ app/vector_index/
 
 Your .env file must contain a valid OPENAI_API_KEY.
 
-## 2️⃣ Run the Retrieval Test
+## 2️⃣ Run the latency test
+- test_retrieval.py: test latency of backend retrieval (FAISS)
+- test_latency.py: test latency for model inference
 
-From the root of the backend (/app) directory, execute:
+### Run directly in local
+
+ex: From the root of the backend (/app) directory, execute:
 ``` bash
 cd /app
 python3 services/test_retrieval.py
@@ -25,10 +29,10 @@ python3 services/test_retrieval.py
 Do not run the test from inside /app/services/,
 because FAISS expects the vector_index directory to be found relative to the working directory (/app/vector_index).
 
-## Running Inside Docker
+### Running Inside Docker
 
 If the backend runs in Docker, execute the following from your host machine:
-
+ex:
 ```bash
 # go to backend container
 docker exec -it chatbot_ma_thesis-backend-1 bash
