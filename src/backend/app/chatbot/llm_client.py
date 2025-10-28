@@ -115,7 +115,7 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     })
 
     # Log what's being sent to OpenAI
-    logging.info(f"\n📤 TOTAL MESSAGES SENT TO OPENAI: {len(messages)}")
+    logging.info(f"\nTOTAL MESSAGES SENT TO OPENAI: {len(messages)}")
     for i, msg in enumerate(messages, 1):
         logging.info(f"  [{i}] role={msg['role']}, content_length={len(msg['content'])} chars")
     logging.info(f"{'='*80}\n")
@@ -129,12 +129,12 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     msg_content = response.choices[0].message.content
     logging.info(f"RAW OpenAI content type={type(msg_content)} value={repr(msg_content)}")
     # Log history
-    # 🔹 Update history with this turn
+    # Update history with this turn
     updated_history = history.copy() if history else []
     updated_history.append({"role": "user", "content": user_message})
     updated_history.append({"role": "assistant", "content": msg_content})
 
-    # ✅ Return full structured ChatResponse
+    # Return full structured ChatResponse
     return ChatResponse(
         role="bot",
         content_type="text",
@@ -241,24 +241,40 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     }
 ]
 
+    # Clean history: remove fallback or broken messages
     if history:
-        messages.extend(history)   # keep conversation memory
+        cleaned_history = []
+        for msg in history:
+            content = msg.get("content", "")
+            if isinstance(content, dict):
+                if content.get("title") == "Response Error":
+                    continue
+            elif isinstance(content, str) and "Response Error" in content:
+                continue
+            cleaned_history.append(msg)
+        history = cleaned_history
+        if history:
+            messages.extend(history)
 
-    # Add the new user query with context
+    # Add user query and context
     messages.append({
         "role": "user",
         "content": f"Context:\n{context}\n\nQuestion: {user_message}"
     })
 
+    # Call the model
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
         tools=tools,
-        tool_choice="auto",  # let model pick schema
+        tool_choice="auto",
         temperature=0.2
     )
 
     tool_calls = response.choices[0].message.tool_calls
+    raw_output = ""
+    parsed_output = {}
+
     if tool_calls:
         raw_output = tool_calls[0].function.arguments
         try:
@@ -268,21 +284,83 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     else:
         parsed_output = {"error": "No function call produced"}
 
-    # normalize type for frontend ContentType enum
-    resp_type = parsed_output.get("type", "text").lower()
+    # Auto-retry when no function call was produced
+    if parsed_output.get("error") == "No function call produced":
+        retry_prompt = (
+            "You forgot to call a function. "
+            "Please re-answer strictly by calling one of the defined functions "
+            "(create_card, create_buttons, create_carousel, create_link)."
+        )
+        messages.append({"role": "user", "content": retry_prompt})
+        retry_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+            temperature=0.2
+        )
+        tool_calls = retry_response.choices[0].message.tool_calls
+        if tool_calls:
+            raw_output = tool_calls[0].function.arguments
+            try:
+                parsed_output = json.loads(raw_output)
+                logging.info("Successfully recovered with retry.")
+            except json.JSONDecodeError:
+                parsed_output = {"error": "Invalid JSON after retry", "raw": raw_output}
+        else:
+            parsed_output = {"error": "Retry also produced no function call"}
 
-    # Map schema type to FE ContentType
+    # Try repair if JSON invalid
+    if "error" in parsed_output and parsed_output["error"].startswith("Invalid JSON"):
+        repair_prompt = f"""
+        The following JSON is invalid or incomplete. Please correct it to be valid JSON for the chatbot schema.
+        JSON:\n{raw_output}
+        """
+        try:
+            repair_response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a JSON repair assistant. Return only valid JSON."},
+                    {"role": "user", "content": repair_prompt}
+                ],
+                temperature=0
+            )
+            repaired_text = repair_response.choices[0].message.content.strip()
+            parsed_output = json.loads(repaired_text)
+            logging.info("JSON successfully repaired.")
+        except Exception as e:
+            logging.error(f"Repair attempt failed: {e}")
+            parsed_output = {"error": "Repair failed"}
+
+    # Ensure valid output for UI
+    if not parsed_output or "error" in parsed_output or not parsed_output.get("type"):
+        parsed_output = {
+            "type": "card",
+            "title": "Response Error",
+            "description": (
+                "Sorry, I could not generate a structured answer for this question. "
+                "Please try rephrasing your question or visit the TU Chemnitz website for details."
+            ),
+            "action_url": "https://www.tu-chemnitz.de",
+            "action_label": "Visit Website"
+        }
+
+    #  Normalize type
+    resp_type = parsed_output.get("type", "text").lower().strip()
+    if resp_type.endswith("s") and resp_type[:-1] in ["link", "button", "card", "carousel"]:
+        resp_type = resp_type[:-1]
+
     type_map = {
         "card": "card",
         "button": "button",
         "carousel": "carousel",
-        "link": "link"
+        "link": "link",
+        "links": "link"
     }
 
     return ChatResponse(
         role="bot",
-        content_type=type_map.get(resp_type,'json'),
+        content_type=type_map.get(resp_type, "json"),
         content=parsed_output,
         history=history
     )
-
