@@ -70,7 +70,7 @@ export default function PlainChatBot({ apiUrl }: Props) {
             const data = await res.json()
             console.log('RAW backend data:', data)
     
-            // normalize content (your existing code)
+            // normalize content
             let content = data.content
             if (data.content_type === ContentType.TEXT && typeof content === 'string') {
                 if (content.includes('\\n') || content.includes('\\t')) {

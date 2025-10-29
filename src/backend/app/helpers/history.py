@@ -22,8 +22,6 @@ def trim_history(history, model="gpt-4o-mini", max_tokens=2000):
 
     return trimmed
 
-MAX_TURNS = 5  # number of user turns to remember
-
 def update_history(history, user_message, assistant_message, 
                    max_turns=MAX_TURNS, max_tokens=2000, model="gpt-4o-mini"):
     if history is None:
