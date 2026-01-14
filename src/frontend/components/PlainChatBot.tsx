@@ -32,50 +32,64 @@ export default function PlainChatBot({ apiUrl }: Props) {
 
     const handleSend = async (message: string) => {
         if (!message.trim()) return
-
-        // user message
+    
+        // Build history FIRST from current messages (before adding new message)
+        const history = messages
+            .filter(m => !m.typing)
+            .map(m => ({
+                role: m.role === 'user' ? 'user' : 'assistant',
+                content: m.content
+            }))
+    
+        console.log('Sending to backend:', {
+            message: message,
+            strategy: 'plain',
+            historyLength: history.length,
+            history: history
+        })
+    
+        // Add user message to UI
         setMessages(prev => [
             ...prev,
             { role: 'user', content_type: ContentType.TEXT, content: message },
         ])
-
-        // typing indicator
+    
+        // Add typing indicator
         setMessages(prev => [
             ...prev,
             { role: 'bot', content_type: ContentType.TEXT, content: '', typing: true },
         ])
-
+    
         try {
             const res = await fetch(`${apiUrl}/chatbot`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message, strategy: 'plain' }),
+                body: JSON.stringify({ message, strategy: 'plain', history }),
             })
-
+    
             const data = await res.json()
             console.log('RAW backend data:', data)
-
-            // --- normalize content ---
+    
+            // normalize content
             let content = data.content
             if (data.content_type === ContentType.TEXT && typeof content === 'string') {
-                try {
-                    if (content.startsWith('"') && content.endsWith('"')) {
-                        content = JSON.parse(content) // unwrap JSON string
-                    } else {
-                        content = content.replace(/^"(.*)"$/, '$1')
-                    }
-                } catch (e) {
-                    console.warn('Could not parse content, using raw:', content)
+                if (content.includes('\\n') || content.includes('\\t')) {
+                    console.log('Unescaping markdown...')
+                    content = content
+                        .replace(/\\n/g, '\n')
+                        .replace(/\\t/g, '\t')
+                        .replace(/\\\\/g, '\\')
+                        .replace(/\\"/g, '"')
                 }
+                content = content.replace(/^"(.*)"$/, '$1')
             }
-
-            // --- build normalized ---
+    
             const normalized: Message = {
                 role: 'bot',
                 content_type: ContentType.TEXT,
                 content: String(content),
             }
-
+    
             setMessages(prev => [...prev.filter(m => !m.typing), normalized])
         } catch (error) {
             console.error('Error fetching response:', error)
@@ -147,11 +161,20 @@ export default function PlainChatBot({ apiUrl }: Props) {
                                     {msg.typing ? (
                                         <TypingIndicator />
                                     ) : (
-                                        <div className="prose prose-sm max-w-full break-words whitespace-pre-wrap">
-                                            <ReactMarkdown>{msg.content}</ReactMarkdown>
-
+                                        <div className="text-sm leading-snug break-words whitespace-pre-wrap [&>*]:m-0 [&>*]:mb-0">
+                                            <ReactMarkdown components={{
+                                                a: ({ node, ...props }) => (
+                                                    <a {...props} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" />
+                                                ),
+                                                p: ({ node, ...props }) => <p {...props} className="my-0" />,
+                                                h2: ({ node, ...props }) => <h2 {...props} className="font-bold mt-0 mb-0" />,
+                                
+                                                ul: ({ node, ...props }) => <ul {...props} className="ml-1 list-disc" />,
+                                                li: ({ node, ...props }) => <li {...props} className="my-0 ml-6" />,
+                                            }}>
+                                                {msg.content}
+                                            </ReactMarkdown>
                                         </div>
-
                                     )}
                                 </div>
 
@@ -184,7 +207,7 @@ export default function PlainChatBot({ apiUrl }: Props) {
                         <input
                             type="text"
                             name="message"
-                            className="flex-1 px-2 py-1 border rounded-md mr-2 text-sm"
+                            className="flex-1 px-2 py-1 border rounded-md mr-2 text-sm text-black bg-white placeholder-gray-500"
                             placeholder="Type a message..."
                         />
                         <button

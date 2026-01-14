@@ -12,6 +12,20 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # Dispatcher
 # ---------------------------
 def generate_response(user_message: str, strategy="plain", history=None) -> ChatResponse:
+    
+    logging.info(f"{'='*80}")
+    logging.info(f"🔍 generate_response() CALLED")
+    logging.info(f"  - user_message: {user_message[:100]}")
+    logging.info(f"  - strategy: {strategy}")
+    logging.info(f"  - history type: {type(history)}")
+    logging.info(f"  - history is None: {history is None}")
+    logging.info(f"  - history value: {history}")
+    logging.info(f"{'='*80}\n")
+
+    # Defensive check — handle pydantic model list
+    if history and not isinstance(history[0], dict):
+        history = [h.dict() for h in history]
+
     context = retrieve_context(user_message)
     
     start_time = time.time()
@@ -33,30 +47,78 @@ def generate_response(user_message: str, strategy="plain", history=None) -> Chat
 # ---------------------------
 def generate_response_plain(user_message: str, context: str, history = None) -> ChatResponse:
     messages = [{"role": "system", "content": "You are a helpful TU Chemnitz onboarding assistant."}]
+    
+    # Log history
+    previous_context = ""
+    if history:
+        cleaned_history = []
+        for msg in history:
+            role = msg.get("role", "").lower().strip()
+            content = msg.get("content", "")
+            if isinstance(content, dict):
+                content = str(content)
+            if role in ("user", "assistant") and content:
+                cleaned_history.append({"role": role, "content": content})
+        if cleaned_history:
+            cleaned_history = cleaned_history[-8:]  # keep last 8 turns
+            messages.extend(cleaned_history)
+            logging.info(f"✅ HISTORY ADDED TO MESSAGES: {len(cleaned_history)} messages")
+        else:
+            logging.info(f"⚠️ HISTORY EXISTS BUT EMPTY AFTER CLEANING")
+    else:
+        logging.info(f"⚠️ NO HISTORY TO ADD")
+
+    previous_context = ""
+    if history:
+        for h in history[-4:]:  # include last 4 turns in text form
+            role = h.get("role")
+            content = h.get("content")
+            if role == "user":
+                previous_context += f"\nUser: {content}"
+            elif role == "assistant":
+                previous_context += f"\nAssistant: {content}"
+    
     prompt = f"""
-    You are a helpful student onboarding assistant at TU Chemnitz.
+    You are TU Chemnitz Onboarding Assistant. 
+    Your only purpose is to help international students with onboarding questions using the official TU Chemnitz context provided. 
     Use the following context to answer:
     {context}
 
-    Answer in **plain natural text** only.
-    - in English
-    - Use single newline `\n` to separate items or sentences within the same section.
-    - Use double newline `\n\n` only to separate major sections.
-    - Keep outputs compact: avoid unnecessary blank lines.
-    - Be clear and concise
-    - Use bold headlines
-    - Bullet points for lists
+    RESPONSE RULES:
+    - Answer in English, clear and conversational
+    - If context doesn't have the info, say so clearly
+    - Match the user's tone (formal or casual)
+    - Be concise and helpful
+
+    FORMATTING RULES (FOLLOW EXACTLY):
+    - Use ## for main section headings
+    - Use bold (**text**) sparingly, only for emphasis within sentences
+    - Separate paragraphs with SINGLE newline (\\n), never double (\\n\\n)
+    - No blank lines anywhere in the response
+    - Keep responses clear and precisely
     - End with a follow-up suggestion
+    - No numbered lists unless specifically asked
+
+    LINKS (IMPORTANT):
+    - Format links as: [descriptive text](URL)
+    - Always include the full URL with https:// 
+    - If user needs a link to city services for example for residence registration (Anmeldung), provide this link: https://www.chemnitz.de/en/town-hall/office-service/citizen-service-centres
+    - Alternative the link for city service and form:  https://www.chemnitz.de/en/rathaus/services-portal-and-forms
+    - If user needs a link to course catalogue of TU Chemnitz, provide this link: https://www.tu-chemnitz.de/studierendenservice/zsb/studiengaenge/index.html.en
 
     Question: {user_message}
     """
-    if history:
-        messages.extend(history)   # keep conversation memory
 
     messages.append({
         "role": "user",
         "content": prompt
     })
+
+    # Log what's being sent to OpenAI
+    logging.info(f"\nTOTAL MESSAGES SENT TO OPENAI: {len(messages)}")
+    for i, msg in enumerate(messages, 1):
+        logging.info(f"  [{i}] role={msg['role']}, content_length={len(msg['content'])} chars")
+    logging.info(f"{'='*80}\n")
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -65,15 +127,21 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     )
 
     msg_content = response.choices[0].message.content
-    import logging
     logging.info(f"RAW OpenAI content type={type(msg_content)} value={repr(msg_content)}")
+    # Log history
+    # Update history with this turn
+    updated_history = history.copy() if history else []
+    updated_history.append({"role": "user", "content": user_message})
+    updated_history.append({"role": "assistant", "content": msg_content})
 
+    # Return full structured ChatResponse
     return ChatResponse(
         role="bot",
         content_type="text",
         content=msg_content,
-        history=history
+        history=updated_history,
     )
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -89,8 +157,13 @@ def generate_response_structured(user_message: str, context: str, history=None) 
         You are TU Chemnitz Onboarding Assistant. 
         Your only purpose is to help international students with onboarding questions using the official TU Chemnitz context provided. 
 
-        STRICT RULES:
+        RESPONSE RULES:
         - Always respond in structured JSON using the provided schemas.
+        - If uncertain which function to use, always default to create_buttons with options asking for clarification.
+        - Never output generic JSON or "content_type: json".
+        - If context doesn't have the info, say so clearly
+        - Match the user's tone (formal or casual)
+        - Be concise and helpful
 
 
         FUNCTION SELECTION GUIDELINES:
@@ -131,6 +204,11 @@ def generate_response_structured(user_message: str, context: str, history=None) 
           - SHOULD use:  "View Program Details", "Download Application", "Check Requirements"
           - NOT use: "Learn More", "Click Here", "Read More"
         - Prefer official TU Chemnitz pages over generic information
+        - Always include the full URL with https:// 
+        - If user needs a link to city services for example for residence registration (Anmeldung), provide this link: https://www.chemnitz.de/en/town-hall/office-service/citizen-service-centres
+        - Alternative the link for city service and form:  https://www.chemnitz.de/en/rathaus/services-portal-and-forms
+        - If user needs a link to course catalogue of TU Chemnitz, provide this link: https://www.tu-chemnitz.de/studierendenservice/zsb/studiengaenge/index.html.en
+
         
         GENERAL INSTRUCTIONS:
         - Always answer in English.
@@ -163,24 +241,40 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     }
 ]
 
+    # Clean history: remove fallback or broken messages
     if history:
-        messages.extend(history)   # keep conversation memory
+        cleaned_history = []
+        for msg in history:
+            content = msg.get("content", "")
+            if isinstance(content, dict):
+                if content.get("title") == "Response Error":
+                    continue
+            elif isinstance(content, str) and "Response Error" in content:
+                continue
+            cleaned_history.append(msg)
+        history = cleaned_history
+        if history:
+            messages.extend(history)
 
-    # Add the new user query with context
+    # Add user query and context
     messages.append({
         "role": "user",
         "content": f"Context:\n{context}\n\nQuestion: {user_message}"
     })
 
+    # Call the model
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
         tools=tools,
-        tool_choice="auto",  # let model pick schema
+        tool_choice="auto",
         temperature=0.2
     )
 
     tool_calls = response.choices[0].message.tool_calls
+    raw_output = ""
+    parsed_output = {}
+
     if tool_calls:
         raw_output = tool_calls[0].function.arguments
         try:
@@ -190,21 +284,83 @@ def generate_response_structured(user_message: str, context: str, history=None) 
     else:
         parsed_output = {"error": "No function call produced"}
 
-    # normalize type for frontend ContentType enum
-    resp_type = parsed_output.get("type", "text").lower()
+    # Auto-retry when no function call was produced
+    if parsed_output.get("error") == "No function call produced":
+        retry_prompt = (
+            "You forgot to call a function. "
+            "Please re-answer strictly by calling one of the defined functions "
+            "(create_card, create_buttons, create_carousel, create_link)."
+        )
+        messages.append({"role": "user", "content": retry_prompt})
+        retry_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+            temperature=0.2
+        )
+        tool_calls = retry_response.choices[0].message.tool_calls
+        if tool_calls:
+            raw_output = tool_calls[0].function.arguments
+            try:
+                parsed_output = json.loads(raw_output)
+                logging.info("Successfully recovered with retry.")
+            except json.JSONDecodeError:
+                parsed_output = {"error": "Invalid JSON after retry", "raw": raw_output}
+        else:
+            parsed_output = {"error": "Retry also produced no function call"}
 
-    # Map schema type to FE ContentType
+    # Try repair if JSON invalid
+    if "error" in parsed_output and parsed_output["error"].startswith("Invalid JSON"):
+        repair_prompt = f"""
+        The following JSON is invalid or incomplete. Please correct it to be valid JSON for the chatbot schema.
+        JSON:\n{raw_output}
+        """
+        try:
+            repair_response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a JSON repair assistant. Return only valid JSON."},
+                    {"role": "user", "content": repair_prompt}
+                ],
+                temperature=0
+            )
+            repaired_text = repair_response.choices[0].message.content.strip()
+            parsed_output = json.loads(repaired_text)
+            logging.info("JSON successfully repaired.")
+        except Exception as e:
+            logging.error(f"Repair attempt failed: {e}")
+            parsed_output = {"error": "Repair failed"}
+
+    # Ensure valid output for UI
+    if not parsed_output or "error" in parsed_output or not parsed_output.get("type"):
+        parsed_output = {
+            "type": "card",
+            "title": "Response Error",
+            "description": (
+                "Sorry, I could not generate a structured answer for this question. "
+                "Please try rephrasing your question or visit the TU Chemnitz website for details."
+            ),
+            "action_url": "https://www.tu-chemnitz.de",
+            "action_label": "Visit Website"
+        }
+
+    #  Normalize type
+    resp_type = parsed_output.get("type", "text").lower().strip()
+    if resp_type.endswith("s") and resp_type[:-1] in ["link", "button", "card", "carousel"]:
+        resp_type = resp_type[:-1]
+
     type_map = {
         "card": "card",
         "button": "button",
         "carousel": "carousel",
-        "link": "link"
+        "link": "link",
+        "links": "link"
     }
 
     return ChatResponse(
         role="bot",
-        content_type=type_map.get(resp_type,'json'),
+        content_type=type_map.get(resp_type, "json"),
         content=parsed_output,
         history=history
     )
-

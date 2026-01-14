@@ -22,6 +22,8 @@ export default function StructuredResponse({ response, onUserAction }: Structure
       return <CarouselComponent {...response.content} onUserAction={onUserAction}/>;
     case "link":
       return <LinkList {...response.content} />;
+    case "links": 
+      return <LinkList {...response.content} />;
     default:
       return (
         <pre className="text-xs text-gray-500">

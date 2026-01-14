@@ -123,8 +123,6 @@ export default function Chatbot({ apiUrl }: Props) {
       });
 
 
-
-
     setMessages((prev) => [
       ...prev,
       { role: 'user', content_type: ContentType.TEXT, content: message }
@@ -169,7 +167,7 @@ export default function Chatbot({ apiUrl }: Props) {
         normalized = {
           role: "bot",
           content_type: ContentType.TEXT,
-          content: data.content, // ✅ now cleaned
+          content: data.content, 
         };
       } else {
         normalized = {
