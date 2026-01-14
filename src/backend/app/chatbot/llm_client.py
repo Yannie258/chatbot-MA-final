@@ -95,7 +95,7 @@ def generate_response_plain(user_message: str, context: str, history = None) -> 
     - Use bold (**text**) sparingly, only for emphasis within sentences
     - Separate paragraphs with SINGLE newline (\\n), never double (\\n\\n)
     - No blank lines anywhere in the response
-    - Keep responses clear, concise, and scannable
+    - Keep responses clear and precisely
     - End with a follow-up suggestion
     - No numbered lists unless specifically asked
 

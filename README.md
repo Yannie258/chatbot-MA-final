@@ -124,6 +124,9 @@ This project has been deployed temporarly in Vercel. For simple user please foll
 
 ** Note: The server can be down if the author stop it. Please contact to author if you if you believe the server is not responding.
 
+## Test chatbot outputs
+- Go to http://localhost:8000/docs
+- There are some endpoints which we can test directly, click try it out. Put your question and strategy (plain/structured) to see the response body.
 
 ## 🗺️ Roadmap
 
