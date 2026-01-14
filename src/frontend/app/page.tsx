@@ -7,7 +7,7 @@ import PlainChatBot from '@/components/PlainChatBot';
 
 export default function Home() {
   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
-  const chatbotVersion = process.env.NEXT_PUBLIC_CHATBOT_VERSION;
+  const chatbotVersion = 'structured';
 
   return (
     <>

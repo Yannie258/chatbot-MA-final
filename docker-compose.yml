@@ -1,85 +1,27 @@
-# Full version with both PLAIN and STRUCTURED frontend services
-# services:
-# # PLAIN VERSION
-#   frontend_plain:
-#     build:
-#       context: ./src/frontend
-#       dockerfile: Dockerfile
-#       target: development  # Explicitly use development stage
-#     volumes:
-#       - ./src/frontend:/app
-#       - /app/node_modules
-#       - /app/.next
-#     command: npm run dev
-#     ports:
-#       - "3000:3000"
-#     env_file:
-#       - ./src/frontend/.env.local
-
-#     environment:
-#       - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-#       - NODE_ENV=development
-#       - CHOKIDAR_USEPOLLING=true
-#       - NEXT_PUBLIC_CHATBOT_VERSION=plain
-#     stdin_open: true
-#     tty: true
-
-# # STRUCTURED VERSION
-#   frontend_structured:
-#     build:
-#       context: ./src/frontend
-#       dockerfile: Dockerfile
-#       target: development  # Explicitly use development stage
-#     volumes:
-#       - ./src/frontend:/app
-#       - /app/node_modules
-#       - /app/.next
-#     command: npm run dev
-#     ports:
-#       - "3001:3000"
-#     env_file:
-#       - ./src/frontend/.env.local
-
-#     environment:
-#       - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-#       - NODE_ENV=development
-#       - CHOKIDAR_USEPOLLING=true
-#       - NEXT_PUBLIC_CHATBOT_VERSION=structured
-#     stdin_open: true
-#     tty: true
-
-#   backend:
-#     build:
-#       context: ./src/backend
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./src/backend/app:/app
-#       - /app/.venv  # For Python virtualenv
-#     ports:
-#       - "8000:8000"
-#     env_file:
-#       - .env  # Load environment variables from .env file
-#     environment:
-#       - OPENAI_API_KEY=${OPENAI_API_KEY}  # From .env file
-#       - PYTHONUNBUFFERED=1
-#       - PYTHONDONTWRITEBYTECODE=1
-#     depends_on:
-#       - redis  # Optional for caching
-
-#   redis:  # Optional for session caching/rate limiting
-#     image: redis:alpine
-#     ports:
-#       - "6379:6379"
-#     volumes:
-#       - redis_data:/data
-
-# volumes:
-#   redis_data:
-
-
-# Specific version with only STRUCTURED frontend service
-
 services:
+# PLAIN VERSION
+  frontend_plain:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+      target: development  # Explicitly use development stage
+    volumes:
+      - ./src/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./src/frontend/.env.local
+
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_PUBLIC_CHATBOT_VERSION=plain
+    stdin_open: true
+    tty: true
 
 # STRUCTURED VERSION
   frontend_structured:
